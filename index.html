@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FaceCheck Pro</title>
+    <title>FaceCheck AI Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        body { font-family: sans-serif; text-align: center; margin: 0; padding: 20px; }
-        .view { display: none; }
+        body { font-family: sans-serif; text-align: center; padding: 10px; background: #f4f4f9; }
+        .view { display: none; margin-top: 20px; }
         #home { display: block; }
-        video { width: 100%; max-width: 300px; border-radius: 15px; background: #000; }
-        button { padding: 12px 20px; margin: 5px; border-radius: 8px; border: none; background: #007bff; color: white; width: 90%; }
+        video, canvas { width: 100%; max-width: 400px; border-radius: 10px; background: #000; }
+        button { padding: 10px 15px; margin: 5px; border-radius: 5px; border: none; background: #28a745; color: white; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -20,18 +20,20 @@
         <button onclick="showView('attendance')">Điểm danh</button>
     </nav>
 
-    <div id="home" class="view"><h1>FaceCheck AI</h1><p>Hệ thống điểm danh sẵn sàng.</p></div>
+    <div id="home" class="view"><h1>Hệ thống FaceCheck</h1><p>Chào mừng đồng chí!</p></div>
 
     <div id="setup" class="view">
         <h1>Tạo cuộc họp</h1>
-        <input type="file" id="upload" accept="image/*" multiple>
-        <p id="setupStatus">Chọn ảnh để huấn luyện AI</p>
+        <input type="file" id="upload" accept="image/*">
+        <div id="canvasContainer" style="margin-top:10px;"></div>
+        <button id="btnTrain" style="display:none;" onclick="trainFaces()">Huấn luyện AI</button>
+        <p id="setupStatus"></p>
     </div>
 
     <div id="attendance" class="view">
         <h1>Điểm danh</h1>
         <video id="video" autoplay muted playsinline></video>
-        <div id="status">Đang tải...</div>
+        <p id="status">Đang khởi động...</p>
     </div>
 
     <script src="app.js"></script>
