@@ -6,19 +6,18 @@ const AppEngine = {
     },
 
     // --- 2. GIAO DIỆN (UI) ---
-    render: function(view) {
+   render: function(view) {
         const main = document.getElementById('mainView');
+        if (!main) { console.error("Không tìm thấy thẻ mainView!"); return; }
+
         if (view === 'home') {
-            main.innerHTML = `<h1>Trang chủ</h1><p>Hệ thống FaceCheck Pro sẵn sàng.</p>`;
+            main.innerHTML = `<h1>Trang chủ</h1><p>Hệ thống sẵn sàng.</p>`;
         } else if (view === 'event') {
             main.innerHTML = `<h1>Quản lý Hội nghị</h1>
                 <input type="text" id="evName" placeholder="Tên hội nghị...">
-                <button onclick="AppEngine.createEvent()">Tạo mới</button>
-                <div id="evList"></div>`;
-        } else if (view === 'participants') {
-            main.innerHTML = `<h1>Người tham gia</h1><input type="file" onchange="AppEngine.importExcel(event)">`;
+                <button onclick="AppEngine.createEvent()">Tạo mới</button>`;
         } else if (view === 'camera') {
-            main.innerHTML = `<h1>Check-in AI</h1><video id="vid" width="640" autoplay muted></video><div id="status">Đang khởi động...</div>`;
+            main.innerHTML = `<h1>Check-in AI</h1><video id="vid" width="640" height="480" autoplay muted></video><div id="status">Đang khởi động AI...</div>`;
             this.startCamera();
         }
     },
