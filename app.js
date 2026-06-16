@@ -68,6 +68,32 @@ const AppEngine = {
         console.log("Đối chiếu dữ liệu...");
     }
 };
+// --- 5. BÁO CÁO & CẢNH BÁO ---
+    exportReport: function() {
+        if (this.state.participants.length === 0) {
+            alert("Chưa có dữ liệu để xuất!");
+            return;
+        }
+        // Sử dụng thư viện SheetJS (xlsx) để xuất file
+        const ws = XLSX.utils.json_to_sheet(this.state.participants);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "BaoCao");
+        XLSX.writeFile(wb, "BaoCaoHoiNghi.xlsx");
+    },
+
+    checkAbsentees: function() {
+        if (!this.state.activeEvent) return;
+        const now = Date.now();
+        const duration = (now - this.state.activeEvent.startTime) / 60000; // Đổi sang phút
+        
+        if (duration >= 15) {
+            const vắng = this.state.participants.filter(p => p.status !== 'Có mặt');
+            if (vắng.length > 0) {
+                console.warn("CẢNH BÁO: Còn người vắng mặt sau 15 phút!", vắng);
+                alert("Cảnh báo: Hội nghị đã quá 15 phút, còn " + vắng.length + " người chưa check-in!");
+            }
+        }
+    }
 
 // Khởi chạy
 document.addEventListener("DOMContentLoaded", () => AppEngine.render('home'));
