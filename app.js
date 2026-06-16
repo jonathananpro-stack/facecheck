@@ -1,19 +1,23 @@
-// Test nhanh để kiểm tra liên kết
-console.log("File app.js đã được tải!");
-document.body.style.backgroundColor = "lightgreen";
+console.log("File app.js đang chạy...");
 
-// Hiển thị nội dung lên web
-document.getElementById('mainView').innerHTML = "<h2>App.js đã kết nối thành công!</h2>";
-
-// Thử khởi tạo Face-api (nếu thư viện nạp đúng)
-try {
+async function startSystem() {
+    const main = document.getElementById('mainView');
+    
+    // Kiểm tra xem FaceAPI đã nạp chưa
     if (typeof faceapi !== 'undefined') {
-        console.log("FaceAPI đã sẵn sàng!");
-        document.getElementById('mainView').innerHTML += "<p>FaceAPI đã nạp thành công.</p>";
+        main.innerHTML = "<h2>FaceAPI đã nạp thành công!</h2><p>Đang tải model...</p>";
+        
+        try {
+            // Nạp model (Đảm bảo folder 'models' nằm cùng cấp với app.js)
+            await faceapi.nets.tinyFaceDetector.loadFromUri('./models');
+            main.innerHTML += "<p style='color:green;'>Model đã sẵn sàng! Hệ thống đã hoàn thiện.</p>";
+            console.log("Hệ thống hoàn tất.");
+        } catch (err) {
+            main.innerHTML += "<p style='color:red;'>Lỗi load model: " + err.message + "</p>";
+        }
     } else {
-        console.log("FaceAPI chưa được nạp.");
-        document.getElementById('mainView').innerHTML += "<p>FaceAPI chưa được nạp, hãy kiểm tra lại script trong HTML.</p>";
+        main.innerHTML = "<p style='color:red;'>Lỗi: Không tìm thấy thư viện FaceAPI!</p>";
     }
-} catch (err) {
-    console.error("Lỗi:", err);
 }
+
+startSystem();
