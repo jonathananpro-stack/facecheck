@@ -1,7 +1,7 @@
 const AppEngine = {
-    // --- 1. DỮ LIỆU & TRẠNG THÁI ---
+    // --- 1. DỮ LIỆU ---
     state: {
-        participants: [], // Danh sách từ Excel
+        participants: [],
         activeEvent: null
     },
 
@@ -18,12 +18,12 @@ const AppEngine = {
         } else if (view === 'participants') {
             main.innerHTML = `<h1>Người tham gia</h1><input type="file" onchange="AppEngine.importExcel(event)">`;
         } else if (view === 'camera') {
-            main.innerHTML = `<h1>Check-in AI</h1><video id="vid" width="640" autoplay></video><div id="status">Đang khởi động...</div>`;
+            main.innerHTML = `<h1>Check-in AI</h1><video id="vid" width="640" autoplay muted></video><div id="status">Đang khởi động...</div>`;
             this.startCamera();
         }
     },
 
-    // --- 3. HỘI NGHỊ & DỮ LIỆU ---
+    // --- 3. HỘI NGHỊ ---
     createEvent: function() {
         const name = document.getElementById('evName').value;
         this.state.activeEvent = { name, startTime: Date.now() };
@@ -31,39 +31,41 @@ const AppEngine = {
     },
 
     importExcel: function(event) {
-        // Giả lập import từ file
         alert("Đã nhận file danh sách!");
     },
 
-    // --- 4. AI & ĐIỂM DANH ---
+    // --- 4. AI & CAMERA ---
     async startCamera() {
         const video = document.getElementById('vid');
         const status = document.getElementById('status');
         
-        // Load Models (Đảm bảo folder /models cùng cấp)
-        await Promise.all([
-            faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
-            faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-            faceapi.nets.faceRecognitionNet.loadFromUri('/models')
-        ]);
-
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        video.srcObject = stream;
-
-        video.addEventListener('play', () => {
-            setInterval(async () => {
-                const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceDescriptor();
-                if (detection) {
-                    status.innerText = "Đã nhận diện: " + detection.descriptor.length;
-                    this.checkAttendance(detection.descriptor);
-                }
-            }, 2000);
-        });
+        try {
+            await Promise.all([
+                faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+                faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+                faceapi.nets.faceRecognitionNet.loadFromUri('/models')
+            ]);
+            
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+            status.innerText = "Đang quét...";
+            
+            video.addEventListener('play', () => {
+                setInterval(async () => {
+                    const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceDescriptor();
+                    if (detection) {
+                        status.innerText = "Đã phát hiện khuôn mặt!";
+                        this.checkAttendance(detection.descriptor);
+                    }
+                }, 2000);
+            });
+        } catch (e) {
+            status.innerText = "Lỗi: " + e.message;
+        }
     },
 
     checkAttendance: function(descriptor) {
-        console.log("Đang đối chiếu khuôn mặt...");
-        // Logic so khớp AI ở đây
+        console.log("Đối chiếu dữ liệu...");
     }
 };
 
