@@ -5,9 +5,11 @@
     <title>FaceCheck System</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
+        body { font-family: sans-serif; text-align: center; background: #f0f2f5; }
         .view { display: none; padding: 20px; }
         #home { display: block; }
-        video { width: 100%; max-width: 400px; border-radius: 10px; background: #000; }
+        video { width: 100%; max-width: 400px; border-radius: 15px; background: #000; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; border-radius: 8px; border: none; background: #007bff; color: white; }
     </style>
 </head>
 <body>
@@ -17,18 +19,18 @@
         <button onclick="showView('attendance')">Điểm danh</button>
     </nav>
 
-    <div id="home" class="view"><h1>Chào mừng!</h1><p>Chọn chức năng để bắt đầu.</p></div>
+    <div id="home" class="view"><h1>FaceCheck AI</h1><p>Hệ thống điểm danh thông minh</p></div>
 
     <div id="setup" class="view">
         <h1>Tạo cuộc họp</h1>
         <input type="file" id="upload" accept="image/*" multiple>
-        <div id="setupList"></div>
+        <p id="setupStatus">Tải ảnh tập thể để AI học khuôn mặt</p>
     </div>
 
     <div id="attendance" class="view">
         <h1>Điểm danh</h1>
         <video id="video" autoplay muted playsinline></video>
-        <div id="status">Đang khởi động...</div>
+        <div id="status">Đang tải Model...</div>
     </div>
 
     <script src="app.js"></script>
