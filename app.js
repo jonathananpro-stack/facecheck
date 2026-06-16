@@ -1,75 +1,42 @@
-const App = {
-    // 1. Khởi tạo
-    init: function() {
-        console.log("Hệ thống khởi động...");
-        this.render('home');
-        this.loadAI();
-    },
-
-    // 2. Render giao diện
+const AppEngine = {
+    // --- 1. GIAO DIỆN ---
     render: function(view) {
         const main = document.getElementById('mainView');
-        if (!main) return;
-
         if (view === 'home') {
-            main.innerHTML = `<h1>Chào mừng!</h1><p>Hệ thống FaceCheck Pro đã sẵn sàng.</p>`;
+            main.innerHTML = `<h1>Chào mừng!</h1><p>Hệ thống FaceCheck Pro.</p>`;
         } else if (view === 'camera') {
-            main.innerHTML = `
-                <div id="status" style="padding:10px; color:red;">Đang khởi động Camera...</div>
-                <video id="vid" width="640" height="480" autoplay muted playsinline style="background:#000; border:2px solid #ccc;"></video>
-            `;
+            main.innerHTML = `<video id="vid" width="640" height="480" autoplay muted playsinline style="background:#000;"></video><div id="status">Đang tải AI...</div>`;
             this.startCamera();
         } else if (view === 'report') {
-            main.innerHTML = `<h1>Báo cáo</h1><button onclick="alert('Tính năng đang hoàn thiện')">Xuất file Excel</button>`;
+            main.innerHTML = `<h1>Báo cáo</h1><button onclick="AppEngine.exportReport()">Xuất Excel</button>`;
         }
     },
 
-    // 3. Load AI với cơ chế kiểm tra
-    loadAI: async function() {
-        try {
-            // Đảm bảo đường dẫn này khớp với folder 'models' của đồng chí
-            const modelPath = './models'; 
-            await faceapi.nets.tinyFaceDetector.loadFromUri(modelPath);
-            await faceapi.nets.faceLandmark68Net.loadFromUri(modelPath);
-            await faceapi.nets.faceRecognitionNet.loadFromUri(modelPath);
-            console.log("AI Models Loaded Successfully");
-        } catch (e) {
-            console.error("Lỗi Model:", e);
-            alert("Lỗi không tìm thấy thư mục models! Hãy kiểm tra lại GitHub.");
-        }
-    },
-
-    // 4. Camera và quét
+    // --- 2. AI ---
     startCamera: async function() {
         const video = document.getElementById('vid');
         const status = document.getElementById('status');
-        
         try {
+            await Promise.all([
+                faceapi.nets.tinyFaceDetector.loadFromUri('./models'),
+                faceapi.nets.faceLandmark68Net.loadFromUri('./models')
+            ]);
             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
             video.srcObject = stream;
-            
-            video.onloadedmetadata = () => {
-                status.innerText = "Camera đang chạy! AI đang xử lý...";
-                status.style.color = "green";
-                this.detectFaces(video);
-            };
+            status.innerText = "Camera đang chạy - AI sẵn sàng!";
         } catch (e) {
-            status.innerText = "Lỗi Camera: " + e.message;
+            status.innerText = "Lỗi: " + e.message;
         }
     },
 
-    // 5. Vòng lặp nhận diện
-    detectFaces: async function(video) {
-        setInterval(async () => {
-            const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions());
-            const status = document.getElementById('status');
-            if (detection) {
-                status.innerText = "Đã tìm thấy khuôn mặt!";
-            } else {
-                status.innerText = "Đang tìm khuôn mặt...";
-            }
-        }, 1000);
+    // --- 3. BÁO CÁO ---
+    exportReport: function() {
+        const data = [{ Tên: "Người dùng", Trạng thái: "Có mặt" }];
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+        XLSX.writeFile(wb, "BaoCao.xlsx");
     }
 };
 
-document.addEventListener("DOMContentLoaded", () => App.init());
+document.addEventListener("DOMContentLoaded", () => AppEngine.render('home'));
