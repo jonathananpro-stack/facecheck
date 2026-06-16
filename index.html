@@ -2,14 +2,15 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>FaceCheck System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FaceCheck Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        body { font-family: sans-serif; text-align: center; background: #f0f2f5; }
-        .view { display: none; padding: 20px; }
+        body { font-family: sans-serif; text-align: center; margin: 0; padding: 20px; }
+        .view { display: none; }
         #home { display: block; }
-        video { width: 100%; max-width: 400px; border-radius: 15px; background: #000; }
-        button { padding: 10px 20px; margin: 5px; cursor: pointer; border-radius: 8px; border: none; background: #007bff; color: white; }
+        video { width: 100%; max-width: 300px; border-radius: 15px; background: #000; }
+        button { padding: 12px 20px; margin: 5px; border-radius: 8px; border: none; background: #007bff; color: white; width: 90%; }
     </style>
 </head>
 <body>
@@ -19,18 +20,18 @@
         <button onclick="showView('attendance')">Điểm danh</button>
     </nav>
 
-    <div id="home" class="view"><h1>FaceCheck AI</h1><p>Hệ thống điểm danh thông minh</p></div>
+    <div id="home" class="view"><h1>FaceCheck AI</h1><p>Hệ thống điểm danh sẵn sàng.</p></div>
 
     <div id="setup" class="view">
         <h1>Tạo cuộc họp</h1>
         <input type="file" id="upload" accept="image/*" multiple>
-        <p id="setupStatus">Tải ảnh tập thể để AI học khuôn mặt</p>
+        <p id="setupStatus">Chọn ảnh để huấn luyện AI</p>
     </div>
 
     <div id="attendance" class="view">
         <h1>Điểm danh</h1>
         <video id="video" autoplay muted playsinline></video>
-        <div id="status">Đang tải Model...</div>
+        <div id="status">Đang tải...</div>
     </div>
 
     <script src="app.js"></script>
