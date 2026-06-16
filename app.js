@@ -1,59 +1,58 @@
-let db;
+let db, currentDetections = [];
 const request = indexedDB.open("FaceCheckDB", 1);
 request.onupgradeneeded = e => e.target.result.createObjectStore("faces", {keyPath: "name"});
-request.onsuccess = e => { db = e.target.result; };
+request.onsuccess = e => { db = e.target.result; initModels(); };
 
-// 1. Chuyển trang (Đã ngắt camera để không treo menu)
+async function initModels() {
+    const URL = 'https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights';
+    await faceapi.nets.tinyFaceDetector.loadFromUri(URL);
+    await faceapi.nets.faceLandmark68Net.loadFromUri(URL);
+    await faceapi.nets.faceRecognitionNet.loadFromUri(URL);
+}
+
 function showView(id) {
-    stopCamera(); 
+    stopCamera();
     document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
     document.getElementById(id).style.display = 'block';
-    if (id === 'attendance') setTimeout(startCamera, 300);
+    if(id === 'attendance') setTimeout(startCamera, 300);
 }
 
-// 2. Ngắt camera (Dùng cho mọi tình huống)
-function stopCamera() {
-    const video = document.getElementById('video');
-    if (video && video.srcObject) {
-        video.srcObject.getTracks().forEach(track => track.stop());
-        video.srcObject = null;
-    }
-}
-
-// 3. TÁCH TẤT CẢ GƯƠNG MẶT (Tính năng chính)
+// Logic Huấn luyện
 document.getElementById('upload').addEventListener('change', async (e) => {
-    const files = e.target.files;
-    if (!files.length) return;
-
-    for (let file of files) {
-        const img = await faceapi.bufferToImage(file);
-        // Tách tất cả các mặt trong ảnh
-        const detections = await faceapi.detectAllFaces(img)
-                                         .withFaceLandmarks()
-                                         .withFaceDescriptors();
-
-        if (detections.length === 0) {
-            alert("Không tìm thấy khuôn mặt nào trong ảnh: " + file.name);
-            continue;
-        }
-
-        // Vòng lặp hỏi từng khuôn mặt
-        for (let i = 0; i < detections.length; i++) {
-            const name = prompt(`Phát hiện khuôn mặt ${i+1}/${detections.length} trong ảnh ${file.name}. Đây là ai?`);
-            if (name) {
-                const tx = db.transaction("faces", "readwrite");
-                tx.objectStore("faces").put({ name, desc: Array.from(detections[i].descriptor) });
-            }
-        }
-    }
-    alert("Đã huấn luyện xong tất cả khuôn mặt!");
+    const img = await faceapi.bufferToImage(e.target.files[0]);
+    const container = document.getElementById('canvasContainer');
+    container.innerHTML = '';
+    const canvas = faceapi.createCanvasFromMedia(img);
+    container.appendChild(canvas);
+    
+    currentDetections = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
+    faceapi.matchDimensions(canvas, img);
+    faceapi.draw.drawDetections(canvas, faceapi.resizeResults(currentDetections, img));
+    document.getElementById('btnTrain').style.display = "block";
+    document.getElementById('setupStatus').innerText = `Tìm thấy ${currentDetections.length} khuôn mặt.`;
 });
 
-// 4. Khởi động Camera (Điểm danh)
+async function trainFaces() {
+    for (let i = 0; i < currentDetections.length; i++) {
+        const name = prompt(`Khuôn mặt ${i+1}: Đây là ai?`);
+        if (name) {
+            db.transaction("faces", "readwrite").objectStore("faces")
+              .put({ name, desc: Array.from(currentDetections[i].descriptor) });
+        }
+    }
+    alert("Đã huấn luyện xong!");
+    document.getElementById('btnTrain').style.display = "none";
+}
+
+// Logic Điểm danh
 async function startCamera() {
     const video = document.getElementById('video');
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-        video.srcObject = stream;
-    } catch (e) { alert("Lỗi mở camera"); }
+        video.srcObject = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+    } catch(e) { document.getElementById('status').innerText = "Lỗi Camera"; }
+}
+
+function stopCamera() {
+    const v = document.getElementById('video');
+    if(v.srcObject) v.srcObject.getTracks().forEach(t => t.stop());
 }
