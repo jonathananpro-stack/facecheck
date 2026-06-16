@@ -13,26 +13,19 @@
     </style>
 </head>
 <body>
-
+<body>
     <nav>
-        <h2>FaceCheck Pro</h2>
-        <button onclick="UI.render('home')">🏠 Trang chủ</button>
-        <button onclick="UI.render('event')">📅 Hội nghị</button>
-        <button onclick="UI.render('participants')">👥 Người tham gia</button>
-        <button onclick="UI.render('report')">📊 Báo cáo</button>
-        <button onclick="UI.render('settings')">⚙️ Cài đặt</button>
+        <button onclick="AppEngine.render('home')">🏠 Trang chủ</button>
+        <button onclick="AppEngine.render('event')">📅 Hội nghị</button>
+        <button onclick="AppEngine.render('camera')">📸 Check-in</button>
+        <button onclick="AppEngine.render('report')">📊 Báo cáo</button>
     </nav>
 
-    <div id="mainView">
-        <div class="card">
-            <h1>Chào mừng quay lại!</h1>
-            <p>Chọn một chức năng ở menu bên trái để bắt đầu.</p>
-        </div>
-    </div>
+    <div id="mainView"></div>
 
-    <script src="app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="app.js"></script>
+    <script src="app.js"></script>
+</body>
+
 </body>
 </html>
