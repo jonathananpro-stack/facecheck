@@ -21,18 +21,46 @@ async function initAI() {
 initAI();
 
 // Tải ảnh huấn luyện
+// Xử lý tải ảnh và tách khuôn mặt tuần tự
 document.getElementById('upload').addEventListener('change', async (e) => {
-    for (let file of e.target.files) {
+    const files = e.target.files;
+    if (files.length === 0) return;
+
+    for (let file of files) {
         const img = await faceapi.bufferToImage(file);
-        const detection = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
-        if (detection) {
-            const name = prompt("Phát hiện khuôn mặt! Nhập tên người này:");
+        // Tách tất cả khuôn mặt trong ảnh
+        const detections = await faceapi.detectAllFaces(img)
+            .withFaceLandmarks()
+            .withFaceDescriptors();
+
+        if (detections.length === 0) {
+            alert("Không tìm thấy khuôn mặt trong ảnh: " + file.name);
+            continue;
+        }
+
+        // Duyệt qua từng khuôn mặt đã tách được
+        for (let i = 0; i < detections.length; i++) {
+            const det = detections[i];
+            
+            // Vẽ mặt lên canvas để đồng chí biết đang nhập cho ai (tùy chọn)
+            // Tạm thời dùng prompt để hỏi
+            const name = prompt(`Đã phát hiện khuôn mặt thứ ${i + 1} trong ảnh ${file.name}. Đây là ai?`);
+            
             if (name) {
-                db.transaction("faces", "readwrite").objectStore("faces").add({name, desc: Array.from(detection.descriptor)});
+                const data = {
+                    name: name,
+                    desc: Array.from(det.descriptor),
+                    time: new Date().toLocaleString()
+                };
+                
+                // Lưu vào IndexedDB
+                const tx = db.transaction("faces", "readwrite");
+                tx.objectStore("faces").put(data); // .put để ghi đè nếu trùng tên
                 document.getElementById('setupStatus').innerText = "Đã lưu: " + name;
             }
         }
     }
+    alert("Đã hoàn tất huấn luyện từ ảnh!");
 });
 
 // Điểm danh
