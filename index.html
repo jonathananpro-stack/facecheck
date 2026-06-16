@@ -5,19 +5,13 @@
     <title>FaceCheck Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
-        #vid { border: 2px solid #333; margin: 20px; }
-        #status { font-weight: bold; color: blue; }
-        #menu { margin-bottom: 20px; }
-    </style>
 </head>
 <body>
-    <div id="menu">
-        <button onclick="App.render('home')">Trang chủ</button>
-        <button onclick="App.render('camera')">Bắt đầu Camera</button>
-        <button onclick="App.render('report')">Xuất Báo cáo</button>
-    </div>
+    <nav>
+        <button onclick="AppEngine.render('home')">Trang chủ</button>
+        <button onclick="AppEngine.render('camera')">Bắt đầu Camera</button>
+        <button onclick="AppEngine.render('report')">Xuất Báo cáo</button>
+    </nav>
     <div id="mainView"></div>
     <script src="app.js"></script>
 </body>
