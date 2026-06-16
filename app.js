@@ -19,13 +19,23 @@ function saveData() {
         time: new Date().toLocaleString()
     };
 
+    if (!data.name) return alert("Vui lòng nhập tên!");
+
     const transaction = db.transaction(["attendance"], "readwrite");
-    transaction.objectStore("attendance").add(data);
+    const store = transaction.objectStore("attendance");
+    store.add(data);
     
-    alert("Đã ghi vào Database: " + data.name);
+    // PHẦN CẬP NHẬT GIAO DIỆN MỚI:
     document.getElementById('inputBox').style.display = "none";
-    document.getElementById('name').value = ""; // Xóa form
-    startScanning(); // Tiếp tục quét
+    status.innerHTML = `<b style="color:blue;">Đã cập nhật thành công cho: ${data.name}! ✅</b>`;
+    
+    // Sau 3 giây, quay lại trạng thái quét bình thường
+    setTimeout(() => {
+        document.getElementById('name').value = "";
+        document.getElementById('dept').value = "";
+        document.getElementById('role').value = "";
+        startScanning();
+    }, 3000);
 }
 
 // 3. Xem danh sách từ DB
