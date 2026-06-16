@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>FaceCheck</title>
+    <link rel="manifest" href="./manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FaceCheck">
+    <link rel="apple-touch-icon" href="./icons/icon-192.png">
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="splash-screen">
+        <div class="logo-fallback">📸</div>
+        <h1>FaceCheck v2.0</h1>
+        <div class="spinner"></div>
+        <p class="subtitle" style="margin-bottom: 0;">Đang bảo mật cấu hình thiết bị...</p>
+    </div>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(reg => console.log('🚀 PWA Active:', reg.scope))
+                    .catch(err => console.error('❌ PWA Fail:', err));
+            });
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+            const isLoggedIn = localStorage.getItem("facecheck_session") || sessionStorage.getItem("facecheck_session");
+            setTimeout(() => {
+                window.location.href = isLoggedIn ? "./dashboard.html" : "./login.html";
+            }, 600);
+        });
+    </script>
+</body>
+</html>
