@@ -25,13 +25,34 @@ async function start() {
 }
 
 function saveData() {
-    const data = {
-        name: document.getElementById('name').value,
-        dept: document.getElementById('dept').value,
-        role: document.getElementById('role').value,
-        extra: document.getElementById('extra').value,
-        timestamp: new Date().toISOString()
-    };
+    const name = document.getElementById('name').value;
+    const dept = document.getElementById('dept').value;
+    const role = document.getElementById('role').value;
+    const extra = document.getElementById('extra').value;
+
+    if (!name || !dept || !role) {
+        alert("Vui lòng nhập đầy đủ Tên, Đơn vị và Chức vụ!");
+        return;
+    }
+
+    const data = { name, dept, role, extra, timestamp: new Date().toLocaleString() };
+
+    // Lưu vào LocalStorage
+    localStorage.setItem('person_' + Date.now(), JSON.stringify(data));
+    
+    // Phản hồi cho người dùng
+    alert("Đã ghi nhận thành công cho: " + name);
+    
+    // Reset form và tiếp tục quét
+    document.getElementById('name').value = "";
+    document.getElementById('dept').value = "";
+    document.getElementById('role').value = "";
+    document.getElementById('extra').value = "";
+    
+    inputBox.style.display = "none";
+    isPaused = false; 
+    status.innerText = "Hệ thống đang quét...";
+}
 
     // Lưu vào LocalStorage (cách nhanh nhất để test ngay)
     localStorage.setItem('person_' + Date.now(), JSON.stringify(data));
