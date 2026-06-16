@@ -2,36 +2,23 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>FaceCheck</title>
-    <link rel="manifest" href="./manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="FaceCheck">
-    <link rel="apple-touch-icon" href="./icons/icon-192.png">
-    <link rel="stylesheet" href="./style.css">
+    <title>FaceCheck Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
+        #vid { border: 2px solid #333; margin: 20px; }
+        #status { font-weight: bold; color: blue; }
+        #menu { margin-bottom: 20px; }
+    </style>
 </head>
 <body>
-    <div class="splash-screen">
-        <div class="logo-fallback">📸</div>
-        <h1>FaceCheck v2.0</h1>
-        <div class="spinner"></div>
-        <p class="subtitle" style="margin-bottom: 0;">Đang bảo mật cấu hình thiết bị...</p>
+    <div id="menu">
+        <button onclick="App.render('home')">Trang chủ</button>
+        <button onclick="App.render('camera')">Bắt đầu Camera</button>
+        <button onclick="App.render('report')">Xuất Báo cáo</button>
     </div>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js')
-                    .then(reg => console.log('🚀 PWA Active:', reg.scope))
-                    .catch(err => console.error('❌ PWA Fail:', err));
-            });
-        }
-        document.addEventListener("DOMContentLoaded", () => {
-            const isLoggedIn = localStorage.getItem("facecheck_session") || sessionStorage.getItem("facecheck_session");
-            setTimeout(() => {
-                window.location.href = isLoggedIn ? "./dashboard.html" : "./login.html";
-            }, 600);
-        });
-    </script>
+    <div id="mainView"></div>
+    <script src="app.js"></script>
 </body>
 </html>
