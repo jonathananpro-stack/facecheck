@@ -2,27 +2,35 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>FaceCheck Pro</title>
+    <title>FaceCheck System</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        body { font-family: sans-serif; text-align: center; background: #eee; }
-        #video { width: 100%; max-width: 500px; border-radius: 10px; background: #000; }
-        .panel { background: #fff; padding: 20px; border-radius: 10px; margin: 10px auto; max-width: 400px; }
-        input, textarea { width: 90%; margin: 5px; padding: 8px; }
+        .view { display: none; padding: 20px; }
+        #home { display: block; }
+        video { width: 100%; max-width: 400px; border-radius: 10px; background: #000; }
     </style>
 </head>
 <body>
-    <h1>FaceCheck Điểm danh</h1>
-    <video id="video" autoplay muted playsinline></video>
-    <div id="status">Đang khởi động...</div>
-    <div id="inputBox" class="panel" style="display:none;">
-        <h3>Ghi nhận khuôn mặt</h3>
-        <input type="text" id="name" placeholder="Họ tên"><br>
-        <input type="text" id="dept" placeholder="Đơn vị"><br>
-        <input type="text" id="role" placeholder="Chức vụ"><br>
-        <button onclick="saveData()">Lưu thông tin</button>
+    <nav>
+        <button onclick="showView('home')">Trang chủ</button>
+        <button onclick="showView('setup')">Tạo cuộc họp</button>
+        <button onclick="showView('attendance')">Điểm danh</button>
+    </nav>
+
+    <div id="home" class="view"><h1>Chào mừng!</h1><p>Chọn chức năng để bắt đầu.</p></div>
+
+    <div id="setup" class="view">
+        <h1>Tạo cuộc họp</h1>
+        <input type="file" id="upload" accept="image/*" multiple>
+        <div id="setupList"></div>
     </div>
-    <button onclick="viewReport()" style="margin:20px;">Xem danh sách điểm danh</button>
+
+    <div id="attendance" class="view">
+        <h1>Điểm danh</h1>
+        <video id="video" autoplay muted playsinline></video>
+        <div id="status">Đang khởi động...</div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>
