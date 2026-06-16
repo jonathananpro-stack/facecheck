@@ -2,12 +2,26 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>FaceCheck Pro</title>
+    <title>FaceCheck - Ghi danh</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 10px; }
+        #video { width: 100%; max-width: 400px; border-radius: 10px; }
+        #inputBox { display: none; background: #eee; padding: 20px; border-radius: 10px; margin: 10px auto; max-width: 350px; }
+    </style>
 </head>
-<body style="background-color: #f0f0f0;">
-    <h1>Hệ thống đang chạy</h1>
-    <div id="mainView"></div>
+<body>
+    <h1>FaceCheck Ghi danh</h1>
+    <video id="video" autoplay muted playsinline></video>
+    <div id="status">Đang tải AI...</div>
+    
+    <div id="inputBox">
+        <input type="text" id="name" placeholder="Họ tên (Nguyễn Văn A)"><br>
+        <input type="text" id="dept" placeholder="Đơn vị (B)"><br>
+        <input type="text" id="role" placeholder="Chức vụ (C)"><br>
+        <textarea id="extra" placeholder="Thông tin mở rộng (nếu có)"></textarea><br>
+        <button onclick="saveData()">Lưu thông tin</button>
+    </div>
     <script src="app.js"></script>
 </body>
 </html>
