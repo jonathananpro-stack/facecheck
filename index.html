@@ -2,27 +2,27 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>FaceCheck - Ghi danh</title>
+    <title>FaceCheck Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 10px; }
-        #video { width: 100%; max-width: 400px; border-radius: 10px; }
-        #inputBox { display: none; background: #eee; padding: 20px; border-radius: 10px; margin: 10px auto; max-width: 350px; }
+        body { font-family: sans-serif; text-align: center; background: #eee; }
+        #video { width: 100%; max-width: 500px; border-radius: 10px; background: #000; }
+        .panel { background: #fff; padding: 20px; border-radius: 10px; margin: 10px auto; max-width: 400px; }
+        input, textarea { width: 90%; margin: 5px; padding: 8px; }
     </style>
 </head>
 <body>
-    <h1>FaceCheck Ghi danh</h1>
+    <h1>FaceCheck Điểm danh</h1>
     <video id="video" autoplay muted playsinline></video>
-    <div id="status">Đang tải AI...</div>
-    
-    <div id="inputBox">
-        <input type="text" id="name" placeholder="Họ tên (Nguyễn Văn A)"><br>
-        <input type="text" id="dept" placeholder="Đơn vị (B)"><br>
-        <input type="text" id="role" placeholder="Chức vụ (C)"><br>
-        <textarea id="extra" placeholder="Thông tin mở rộng (nếu có)"></textarea><br>
+    <div id="status">Đang khởi động...</div>
+    <div id="inputBox" class="panel" style="display:none;">
+        <h3>Ghi nhận khuôn mặt</h3>
+        <input type="text" id="name" placeholder="Họ tên"><br>
+        <input type="text" id="dept" placeholder="Đơn vị"><br>
+        <input type="text" id="role" placeholder="Chức vụ"><br>
         <button onclick="saveData()">Lưu thông tin</button>
-        <button onclick="viewReport()" style="padding:10px; margin-top:20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">Xem danh sách đã điểm danh</button>
     </div>
+    <button onclick="viewReport()" style="margin:20px;">Xem danh sách điểm danh</button>
     <script src="app.js"></script>
 </body>
 </html>
