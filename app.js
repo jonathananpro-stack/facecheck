@@ -65,14 +65,29 @@ function saveData() {
 //xem danh sách điểm danh
 function viewReport() {
     let list = "DANH SÁCH ĐIỂM DANH:\n";
+    let count = 0;
+
+    // Duyệt qua tất cả các key trong localStorage
     for (let i = 0; i < localStorage.length; i++) {
         let key = localStorage.key(i);
-        if (key.startsWith('person_')) {
-            let data = JSON.parse(localStorage.getItem(key));
-            list += `- ${data.name} (${data.dept}) lúc ${data.timestamp}\n`;
+        
+        // Chỉ lấy các key bắt đầu bằng 'person_'
+        if (key && key.startsWith('person_')) {
+            try {
+                let data = JSON.parse(localStorage.getItem(key));
+                list += `\n- ${data.name} | Đơn vị: ${data.dept} | ${data.timestamp}`;
+                count++;
+            } catch (e) {
+                console.log("Lỗi đọc dữ liệu:", key);
+            }
         }
     }
-    alert(list);
+
+    if (count === 0) {
+        alert("Chưa có dữ liệu điểm danh nào cả!");
+    } else {
+        alert(list);
+    }
 }
 
 start();
