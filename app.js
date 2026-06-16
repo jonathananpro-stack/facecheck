@@ -62,5 +62,17 @@ function saveData() {
     isPaused = false; // Tiếp tục quét
     status.innerText = "Hệ thống đang quét...";
 }
+//xem danh sách điểm danh
+function viewReport() {
+    let list = "DANH SÁCH ĐIỂM DANH:\n";
+    for (let i = 0; i < localStorage.length; i++) {
+        let key = localStorage.key(i);
+        if (key.startsWith('person_')) {
+            let data = JSON.parse(localStorage.getItem(key));
+            list += `- ${data.name} (${data.dept}) lúc ${data.timestamp}\n`;
+        }
+    }
+    alert(list);
+}
 
 start();
