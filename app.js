@@ -1,98 +1,56 @@
-const AppEngine = {
-    // --- 1. DỮ LIỆU ---
-    state: {
-        participants: [],
-        activeEvent: null
+const App = {
+    // Khởi tạo trạng thái
+    init: function() {
+        this.render('home');
+        this.loadAI();
     },
 
-    // --- 2. GIAO DIỆN (UI) ---
-   render: function(view) {
+    // Quản lý giao diện
+    render: function(view) {
         const main = document.getElementById('mainView');
-        if (!main) { console.error("Không tìm thấy thẻ mainView!"); return; }
-
         if (view === 'home') {
-            main.innerHTML = `<h1>Trang chủ</h1><p>Hệ thống sẵn sàng.</p>`;
-        } else if (view === 'event') {
-            main.innerHTML = `<h1>Quản lý Hội nghị</h1>
-                <input type="text" id="evName" placeholder="Tên hội nghị...">
-                <button onclick="AppEngine.createEvent()">Tạo mới</button>`;
+            main.innerHTML = `<h1>Chào mừng!</h1><p>Chọn chức năng để bắt đầu.</p>`;
         } else if (view === 'camera') {
-            main.innerHTML = `<h1>Check-in AI</h1><video id="vid" width="640" height="480" autoplay muted></video><div id="status">Đang khởi động AI...</div>`;
+            main.innerHTML = `<video id="vid" width="640" height="480" autoplay muted></video><div id="status">Đang tải AI...</div>`;
             this.startCamera();
+        } else if (view === 'report') {
+            main.innerHTML = `<h1>Báo cáo</h1><button onclick="App.exportReport()">Xuất Excel</button>`;
         }
     },
 
-    // --- 3. HỘI NGHỊ ---
-    createEvent: function() {
-        const name = document.getElementById('evName').value;
-        this.state.activeEvent = { name, startTime: Date.now() };
-        alert("Đã tạo hội nghị: " + name);
+    // Core AI
+    loadAI: async function() {
+        await Promise.all([
+            faceapi.nets.tinyFaceDetector.loadFromUri('./models'),
+            faceapi.nets.faceLandmark68Net.loadFromUri('./models'),
+            faceapi.nets.faceRecognitionNet.loadFromUri('./models')
+        ]);
+        console.log("AI Ready");
     },
 
-    importExcel: function(event) {
-        alert("Đã nhận file danh sách!");
-    },
-
-    // --- 4. AI & CAMERA ---
-    async startCamera() {
+    startCamera: async function() {
         const video = document.getElementById('vid');
         const status = document.getElementById('status');
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
         
-        try {
-            await Promise.all([
-                faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
-                faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-                faceapi.nets.faceRecognitionNet.loadFromUri('/models')
-            ]);
-            
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            video.srcObject = stream;
-            status.innerText = "Đang quét...";
-            
-            video.addEventListener('play', () => {
-                setInterval(async () => {
-                    const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceDescriptor();
-                    if (detection) {
-                        status.innerText = "Đã phát hiện khuôn mặt!";
-                        this.checkAttendance(detection.descriptor);
-                    }
-                }, 2000);
-            });
-        } catch (e) {
-            status.innerText = "Lỗi: " + e.message;
-        }
+        video.addEventListener('play', () => {
+            status.innerText = "Đang quét khuôn mặt...";
+            setInterval(async () => {
+                const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions());
+                if(detection) status.innerText = "Đã thấy mặt!";
+            }, 1000);
+        });
     },
 
-    checkAttendance: function(descriptor) {
-        console.log("Đối chiếu dữ liệu...");
+    exportReport: function() {
+        const data = [{ Tên: "Nguyễn Văn A", Trạng thái: "Có mặt" }];
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Data");
+        XLSX.writeFile(wb, "Report.xlsx");
     }
 };
-// --- 5. BÁO CÁO & CẢNH BÁO ---
-    exportReport: function() {
-        if (this.state.participants.length === 0) {
-            alert("Chưa có dữ liệu để xuất!");
-            return;
-        }
-        // Sử dụng thư viện SheetJS (xlsx) để xuất file
-        const ws = XLSX.utils.json_to_sheet(this.state.participants);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "BaoCao");
-        XLSX.writeFile(wb, "BaoCaoHoiNghi.xlsx");
-    },
 
-    checkAbsentees: function() {
-        if (!this.state.activeEvent) return;
-        const now = Date.now();
-        const duration = (now - this.state.activeEvent.startTime) / 60000; // Đổi sang phút
-        
-        if (duration >= 15) {
-            const vắng = this.state.participants.filter(p => p.status !== 'Có mặt');
-            if (vắng.length > 0) {
-                console.warn("CẢNH BÁO: Còn người vắng mặt sau 15 phút!", vắng);
-                alert("Cảnh báo: Hội nghị đã quá 15 phút, còn " + vắng.length + " người chưa check-in!");
-            }
-        }
-    }
-
-// Khởi chạy
-document.addEventListener("DOMContentLoaded", () => AppEngine.render('home'));
+// Khởi chạy hệ thống
+document.addEventListener("DOMContentLoaded", () => App.init());
