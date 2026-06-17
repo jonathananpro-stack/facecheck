@@ -2,32 +2,35 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>SEC_CORE_V2_PRO</title>
+    <title>SEC_CORE_IOS</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 </head>
 <body>
-
+    <div id="overlay" onclick="toggleMenu()"></div>
+    
     <div id="sidebar">
-        <button onclick="toggleMenu()">☰ Đóng Menu</button>
+        <div class="menu-header">Menu Điều Khiển</div>
         <div class="input-box">
-            <input type="text" id="manual-name" placeholder="Nhập tên nhân viên...">
-            <button onclick="saveManual()">Lưu thủ công</button>
-            <button onclick="startVoice()">🎙️ Nhập giọng nói</button>
+            <input type="text" id="manual-name" placeholder="Tên nhân viên...">
+            <button onclick="saveManual()"><i class="fa-solid fa-check"></i> Lưu</button>
+            <button onclick="startVoice()"><i class="fa-solid fa-microphone"></i> Nhập Giọng Nói</button>
         </div>
-        <hr>
-        <button onclick="exportData()">📥 Xuất báo cáo CSV</button>
+        <button class="btn-report" onclick="exportData()"><i class="fa-solid fa-file-csv"></i> Xuất Báo Cáo</button>
     </div>
 
     <div id="main-content">
-        <button onclick="toggleMenu()">☰ Menu</button>
+        <div class="top-bar">
+            <button class="menu-btn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></button>
+            <h3>Hệ thống điểm danh</h3>
+        </div>
         <video id="video" autoplay playsinline muted></video>
         <table id="attendance-table">
             <thead><tr><th>TÊN</th><th>TRẠNG THÁI</th><th>GIỜ</th></tr></thead>
             <tbody id="attendance-body"></tbody>
         </table>
     </div>
-
     <script type="module" src="app.js"></script>
 </body>
 </html>
