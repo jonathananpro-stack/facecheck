@@ -11,46 +11,57 @@
         video { width: 60%; border: 2px solid #00ffcc; margin-top: 20px; }
         button { padding: 20px 40px; margin: 10px; cursor: pointer; background: transparent; color: #00ffcc; border: 1px solid #00ffcc; font-weight: bold; transition: 0.3s; }
         button:hover { background: #00ffcc; color: #000; }
-        #log-table { color: #fff; width: 80%; border-collapse: collapse; }
-        th, td { border: 1px solid #333; padding: 10px; text-align: center; }
+        .glow-text { text-shadow: 0 0 10px #00ffcc; }
     </style>
 </head>
 <body>
 
+    <!-- MÀN HÌNH CHỦ -->
     <div id="home" class="page">
-        <h1>SEC_CORE V6</h1>
+        <h1 class="glow-text">SEC_CORE V6</h1>
+        <button onclick="showPage('train')">HUẤN LUYỆN AI</button>
         <button onclick="showPage('cam')">TẠO CUỘC HỌP</button>
         <button onclick="showPage('report')">BÁO CÁO</button>
     </div>
 
-    <div id="cam" class="page">
-        <video id="video" autoplay playsinline muted></video>
+    <!-- MÀN HÌNH HUẤN LUYỆN -->
+    <div id="train" class="page">
+        <h2 class="glow-text">HUẤN LUYỆN AI</h2>
+        <video id="v-train" autoplay playsinline muted></video>
         <button onclick="showPage('home')">QUAY LẠI</button>
     </div>
 
+    <!-- MÀN HÌNH CAMERA -->
+    <div id="cam" class="page">
+        <video id="v-cam" autoplay playsinline muted></video>
+        <button onclick="showPage('home')">QUAY LẠI</button>
+    </div>
+
+    <!-- MÀN HÌNH BÁO CÁO -->
     <div id="report" class="page">
-        <h2 style="color:#00ffcc">NHẬT KÝ ĐIỂM DANH</h2>
-        <table id="log-table"><thead><tr><th>Thời gian</th></tr></thead><tbody id="log-body"></tbody></table>
+        <h2 class="glow-text">NHẬT KÝ ĐIỂM DANH</h2>
         <button onclick="showPage('home')">QUAY LẠI</button>
     </div>
 
     <script>
-        // LOGIC TOÀN CỤC
         async function showPage(pageId) {
+            // Ẩn tất cả
             document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+            // Hiện trang chọn
             document.getElementById(pageId).style.display = 'flex';
 
-            const video = document.getElementById('video');
-            if (pageId === 'cam') {
+            // Ngắt tất cả camera cũ
+            ['v-train', 'v-cam'].forEach(id => {
+                const v = document.getElementById(id);
+                if(v.srcObject) v.srcObject.getTracks().forEach(t => t.stop());
+            });
+
+            // Bật camera cho trang tương ứng
+            if (pageId === 'train' || pageId === 'cam') {
+                const v = document.getElementById(pageId === 'train' ? 'v-train' : 'v-cam');
                 try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                    video.srcObject = stream;
-                    // Tự động lưu log khi mở camera (demo)
-                    const row = document.getElementById('log-body').insertRow();
-                    row.insertCell(0).innerText = "Họp bắt đầu lúc: " + new Date().toLocaleTimeString();
-                } catch (e) { alert("Lỗi Camera: " + e); }
-            } else {
-                if(video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
+                    v.srcObject = await navigator.mediaDevices.getUserMedia({ video: true });
+                } catch (e) { alert("Cấp quyền camera để tiếp tục!"); }
             }
         }
     </script>
