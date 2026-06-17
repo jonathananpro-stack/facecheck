@@ -9,11 +9,16 @@
         body { font-family: sans-serif; text-align: center; background: #f4f4f9; padding: 10px; }
         .view { display: none; margin-top: 20px; }
         #home { display: block; }
-        /* Container giúp Canvas đè lên Video chính xác */
         #video-container { position: relative; display: inline-block; width: 100%; max-width: 400px; }
         video { width: 100%; border-radius: 15px; background: #000; }
-        canvas { position: absolute; top: 0; left: 0; pointer-events: none; }
-        button { padding: 12px 20px; margin: 5px; border-radius: 8px; border: none; background: #28a745; color: white; cursor: pointer; }
+        #video-container canvas { position: absolute; top: 0; left: 0; pointer-events: none; }
+        
+        /* CSS cho Slide khuôn mặt */
+        #faceSlider { display: flex; gap: 10px; overflow-x: auto; padding: 10px; border: 1px solid #ccc; min-height: 180px; }
+        .face-slide { border: 2px solid #28a745; padding: 5px; border-radius: 8px; flex: 0 0 auto; }
+        .face-slide canvas { width: 120px; height: 120px; display: block; }
+        
+        button { padding: 10px 20px; margin: 5px; border-radius: 8px; border: none; background: #28a745; color: white; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -23,14 +28,13 @@
         <button onclick="showView('attendance')">Điểm danh</button>
     </nav>
 
-    <div id="home" class="view"><h1>FaceCheck AI</h1><p>Hệ thống sẵn sàng.</p></div>
+    <div id="home" class="view"><h1>FaceCheck AI</h1><p>Chào mừng đồng chí!</p></div>
 
     <div id="setup" class="view">
-        <h1>Tạo cuộc họp</h1>
+        <h1>Huấn luyện khuôn mặt</h1>
         <input type="file" id="upload" accept="image/*">
-        <div id="canvasContainer"></div>
-        <button id="btnTrain" style="display:none;" onclick="trainFaces()">Huấn luyện AI</button>
-        <p id="setupStatus"></p>
+        <div id="faceSlider"></div>
+        <p id="setupStatus">Tải ảnh lên để bắt đầu...</p>
     </div>
 
     <div id="attendance" class="view">
@@ -38,7 +42,7 @@
         <div id="video-container">
             <video id="video" autoplay muted playsinline></video>
         </div>
-        <div id="status" style="margin-top:10px; font-weight:bold;">Đang khởi động...</div>
+        <div id="status" style="font-weight:bold; margin-top:10px;">Đang khởi động...</div>
     </div>
 
     <script src="app.js"></script>
