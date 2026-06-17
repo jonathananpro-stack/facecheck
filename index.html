@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>SEC_CORE Ultimate</title>
+    <title>SEC_CORE Ultimate V3</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
@@ -10,37 +10,26 @@
 </head>
 <body>
     <div id="welcome-screen" class="screen">
-        <h1>SEC_CORE Ultimate</h1>
+        <h1>SEC_CORE Ultimate V3</h1>
         <div class="menu-grid">
             <button onclick="showScreen('main-screen')"><i class="fa-solid fa-camera"></i> Điểm danh</button>
-            <button onclick="document.getElementById('ocr-input').click()"><i class="fa-solid fa-file-image"></i> Nhập danh sách ảnh</button>
-            <button onclick="alert('Đã sẵn sàng')"><i class="fa-solid fa-clock-rotate-left"></i> Xem lịch sử</button>
-            <button onclick="alert('Đang huấn luyện')"><i class="fa-solid fa-brain"></i> Huấn luyện AI</button>
+            <button onclick="document.getElementById('ocr-input').click()"><i class="fa-solid fa-file-image"></i> Nhập danh sách</button>
             <input type="file" id="ocr-input" hidden onchange="processOCR(event)">
+            <button onclick="alert('Đang huấn luyện AI...')"><i class="fa-solid fa-brain"></i> Huấn luyện AI</button>
         </div>
     </div>
-
     <div id="main-screen" class="screen" style="display:none;">
         <div class="top-bar">
             <button onclick="showScreen('welcome-screen')"><i class="fa-solid fa-house"></i></button>
             <button onclick="switchCamera()"><i class="fa-solid fa-camera-rotate"></i> Đảo Cam</button>
             <button onclick="startAudit()"><i class="fa-solid fa-magnifying-glass"></i> Kiểm vắng</button>
-            <button onclick="showSummary()"><i class="fa-solid fa-chart-pie"></i> Tổng kết</button>
-        </div>
-        <div class="stats-bar" style="display:flex; gap:20px; margin:10px;">
-            <div><span id="present-count">0</span> Có mặt</div>
-            <div><span id="missing-count">0</span> Vắng</div>
         </div>
         <video id="video" autoplay playsinline muted></video>
+        <div class="stats-bar"><span id="stats">0 Có mặt - 0 Vắng</span></div>
         <table id="attendance-table"><tbody id="attendance-body"></tbody></table>
     </div>
-
     <div id="info-modal" class="modal">
-        <div class="modal-content" style="background:#222; padding:20px; border-radius:20px; text-align:center;">
-            <img id="face-preview" style="width:120px; border-radius:50%; border:3px solid #007aff;">
-            <input type="text" id="new-name" placeholder="Tên nhân sự mới" style="padding:10px; margin:10px 0; width:80%;">
-            <button onclick="saveProfile()" style="padding:10px 20px;">Lưu & Huấn luyện</button>
-        </div>
+        <div class="modal-content"><img id="face-preview" style="width:120px;border-radius:50%"><input type="text" id="new-name" placeholder="Tên nhân sự"><button onclick="saveProfile()">Xác nhận</button></div>
     </div>
     <script type="module" src="app.js"></script>
 </body>
