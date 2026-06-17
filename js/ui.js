@@ -1,26 +1,7 @@
 export const UI = {
-    toggleMenu: () => {
-        document.getElementById('sidebar').classList.toggle('active');
-        document.getElementById('overlay').classList.toggle('active');
-    },
-    updateAttendance: (name, time) => {
-        const body = document.getElementById('attendance-body');
-        if (!document.getElementById('row-' + name)) {
-            body.innerHTML += `<tr id="row-${name}"><td>${name}</td><td>Đã có mặt</td><td>${time}</td></tr>`;
-        }
-    },
-    startVoice: () => {
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'vi-VN';
-        recognition.onresult = (e) => {
-            document.getElementById('manual-name').value = e.results[0][0].transcript;
-        };
-        recognition.start();
-    },
-    loadModels: async () => {
-        const M = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
-        await faceapi.loadTinyFaceDetectorModel(M);
-        await faceapi.loadFaceLandmarkModel(M);
-        await faceapi.loadFaceRecognitionModel(M);
-    }
+    toggleMenu: () => { document.getElementById('sidebar').classList.toggle('active'); },
+    updateAttendance: (name, time, isExp) => { if (!document.getElementById('row-'+name)) document.getElementById('attendance-body').innerHTML += `<tr id="row-${name}"><td>${name}</td><td>${isExp?'Có mặt':'Khách'}</td><td>${time}</td></tr>`; },
+    showInfoModal: (desc) => { document.getElementById('info-modal').style.display = 'block'; window.currentDescriptor = desc; },
+    captureFace: (v) => { const c = document.createElement('canvas'); c.width=200; c.height=200; c.getContext('2d').drawImage(v, 120, 40, 400, 400, 0, 0, 200, 200); return c.toDataURL(); },
+    loadModels: async () => { const M = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/'; await faceapi.loadTinyFaceDetectorModel(M); await faceapi.loadFaceLandmarkModel(M); await faceapi.loadFaceRecognitionModel(M); }
 };
