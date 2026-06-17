@@ -1,26 +1,47 @@
 <!DOCTYPE html>
-<html lang="vi"><head><meta charset="UTF-8"><title>SEC_CORE V6</title>
-<link rel="stylesheet" href="style.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script></head>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>SEC_CORE Ultimate V6</title>
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <style>
+        body { margin: 0; background: #050505; color: #00ffcc; font-family: 'Courier New', monospace; }
+        .page { display: none; height: 100vh; flex-direction: column; align-items: center; justify-content: center; }
+        #home { display: flex; }
+        video { width: 60%; border: 2px solid #00ffcc; }
+        button { padding: 20px; margin: 10px; cursor: pointer; background: #111; color: #00ffcc; border: 1px solid #00ffcc; }
+    </style>
+</head>
 <body>
-    <div id="home-screen" class="screen">
-        <h1 class="glow-text">SEC_CORE V6</h1>
-        <div class="grid">
-            <button onclick="navigate('training')">HUẤN LUYỆN AI</button>
-            <button onclick="navigate('live')">TẠO CUỘC HỌP</button>
-            <button onclick="navigate('history')">BÁO CÁO</button>
-        </div>
+
+    <div id="home" class="page">
+        <h1>SEC_CORE V6</h1>
+        <button onclick="showPage('cam-page')">TẠO CUỘC HỌP</button>
+        <button onclick="alert('Đang phát triển...')">BÁO CÁO</button>
     </div>
-    <div id="app-screen" class="screen" style="display:none;">
-        <button class="back-btn" onclick="navigate('home')"><i class="fa-solid fa-arrow-left"></i></button>
+
+    <div id="cam-page" class="page">
         <video id="video" autoplay playsinline muted></video>
-        <div id="validation-overlay"></div>
+        <button onclick="showPage('home')">QUAY LẠI</button>
     </div>
-    <div id="history-screen" class="screen" style="display:none;">
-        <button class="back-btn" onclick="navigate('home')"><i class="fa-solid fa-arrow-left"></i></button>
-        <h2 class="glow-text">NHẬT KÝ ĐIỂM DANH</h2>
-        <div id="log-container" style="color:white; width:80%;"></div>
-        <button onclick="Report.downloadCSV()">TẢI XUỐNG CSV</button>
-    </div>
-    <script type="module" src="app.js"></script>
-</body></html>
+
+    <script>
+        // Hàm điều hướng toàn cục (không bị lỗi liên kết)
+        async function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+            const target = document.getElementById(pageId);
+            target.style.display = 'flex';
+
+            if (pageId === 'cam-page') {
+                const video = document.getElementById('video');
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } else {
+                // Tắt camera khi quay về
+                const video = document.getElementById('video');
+                if(video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
+            }
+        }
+    </script>
+</body>
+</html>
