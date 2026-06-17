@@ -2,47 +2,67 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>SEC_CORE_FINAL</title>
+    <title>SEC_CORE_START</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
-        #video { width: 640px; height: 480px; background: #333; }
-        #vip-alert { display:none; position:fixed; top:0; width:100%; padding:20px; background:red; text-align:center; font-weight:bold; font-size:24px; z-index:999; }
-        table { width: 100%; max-width: 800px; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #555; padding: 12px; text-align: center; }
+        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        #welcome-screen { text-align: center; }
+        #app-screen { display: none; width: 100%; flex-direction: column; align-items: center; }
+        button { padding: 15px 30px; font-size: 20px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px; }
+        #video { width: 640px; height: 480px; background: #222; transform: scaleX(-1); }
+        table { width: 90%; margin-top: 20px; border-collapse: collapse; }
+        th, td { border: 1px solid #444; padding: 10px; text-align: center; }
     </style>
 </head>
 <body>
-    <div id="vip-alert"></div>
-    <video id="video" autoplay playsinline muted></video>
-    <table>
-        <thead><tr><th>TÊN</th><th>TRẠNG THÁI</th><th>GIỜ</th></tr></thead>
-        <tbody id="body"></tbody>
-    </table>
+
+    <div id="welcome-screen">
+        <h1>SEC_CORE_V2</h1>
+        <p>Vui lòng cấp quyền Camera để bắt đầu điểm danh</p>
+        <button onclick="startApp()">VÀO HỆ THỐNG</button>
+    </div>
+
+    <div id="app-screen">
+        <video id="video" autoplay playsinline muted></video>
+        <table>
+            <thead><tr><th>TÊN</th><th>TRẠNG THÁI</th><th>GIỜ</th></tr></thead>
+            <tbody id="body"></tbody>
+        </table>
+    </div>
 
     <script>
-        const video = document.getElementById('video');
-        const body = document.getElementById('body');
-        const alertBox = document.getElementById('vip-alert');
-        let library = JSON.parse(localStorage.getItem('library') || '[]');
-
-        async function init() {
+        async function startApp() {
             try {
-                // Tải Models
-                await faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights');
-                await faceapi.nets.faceLandmark6Net.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights');
-                await faceapi.nets.faceRecognitionNet.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights');
+                // 1. Cấp quyền Camera
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                document.getElementById('video').srcObject = stream;
                 
-                // Mở Camera
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-                video.srcObject = stream;
+                // 2. Chuyển màn hình
+                document.getElementById('welcome-screen').style.display = 'none';
+                document.getElementById('app-screen').style.display = 'flex';
+
+                // 3. Load AI
+                const M = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights';
+                await Promise.all([
+                    faceapi.nets.tinyFaceDetector.loadFromUri(M),
+                    faceapi.nets.faceLandmark6Net.loadFromUri(M),
+                    faceapi.nets.faceRecognitionNet.loadFromUri(M)
+                ]);
+
+                runLoop();
             } catch (e) {
-                alert("Lỗi Camera hoặc mạng: " + e.message);
+                alert("Lỗi quyền truy cập Camera: " + e.message);
             }
         }
 
-        video.addEventListener('play', () => {
-            const matcher = library.length > 0 ? new faceapi.FaceMatcher(library.map(p => new faceapi.LabeledFaceDescriptors(p.name, [new Float32Array(Object.values(p.descriptor))]))) : null;
+        async function runLoop() {
+            const video = document.getElementById('video');
+            const body = document.getElementById('body');
+            const library = JSON.parse(localStorage.getItem('library') || '[]');
+            
+            const matcher = library.length > 0 ? new faceapi.FaceMatcher(library.map(p => 
+                new faceapi.LabeledFaceDescriptors(p.name, [new Float32Array(Object.values(p.descriptor))])
+            )) : null;
 
             setInterval(async () => {
                 const det = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
@@ -52,18 +72,11 @@
                         const p = library.find(x => x.name === match.label);
                         if(p && !document.getElementById('row-'+p.name)) {
                             body.innerHTML += `<tr id="row-${p.name}"><td>${p.name}</td><td>ĐÃ CÓ MẶT</td><td>${new Date().toLocaleTimeString()}</td></tr>`;
-                            if(p.isVIP) {
-                                alertBox.innerText = '⚠️ VIP ĐANG CÓ MẶT: ' + p.name;
-                                alertBox.style.display = 'block';
-                                setTimeout(() => alertBox.style.display = 'none', 3000);
-                            }
                         }
                     }
                 }
             }, 1000);
-        });
-
-        init();
+        }
     </script>
 </body>
 </html>
