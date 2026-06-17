@@ -10,5 +10,17 @@
         <video id="video" autoplay playsinline muted></video><div id="hud-container"></div><div id="validation-overlay"></div>
         <table id="attendance-table"><tbody id="attendance-body"></tbody></table></div>
     <div id="info-modal" class="modal"><div class="modal-content"><img id="face-preview"><input type="text" id="new-name" placeholder="Tên"><button onclick="saveProfile()">Lưu</button></div></div>
-    <script type="module" src="app.js"></script>
+    <script type="module" src="app.js">
+        // Tạo hiệu ứng dữ liệu chạy ngầm
+setInterval(() => {
+    const log = document.createElement('div');
+    log.innerText = "SEC_CORE: SYSTEM ACTIVE - " + new Date().toLocaleTimeString();
+    log.style.color = "#00ffcc";
+    log.style.position = "absolute";
+    log.style.bottom = "10px";
+    log.style.opacity = "0.5";
+    document.body.appendChild(log);
+    setTimeout(() => log.remove(), 2000);
+}, 3000);
+    </script>
 </body></html>
