@@ -2,13 +2,13 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>SEC_CORE_START</title>
-    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <title>SEC_CORE_FIXED</title>
+    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
     <style>
         body { margin: 0; background: #000; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
         #welcome-screen { text-align: center; }
         #app-screen { display: none; width: 100%; flex-direction: column; align-items: center; }
-        button { padding: 15px 30px; font-size: 20px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px; }
+        button { padding: 20px 40px; font-size: 22px; cursor: pointer; background: #e67e22; color: white; border: none; border-radius: 8px; }
         #video { width: 640px; height: 480px; background: #222; transform: scaleX(-1); }
         table { width: 90%; margin-top: 20px; border-collapse: collapse; }
         th, td { border: 1px solid #444; padding: 10px; text-align: center; }
@@ -18,8 +18,7 @@
 
     <div id="welcome-screen">
         <h1>SEC_CORE_V2</h1>
-        <p>Vui lòng cấp quyền Camera để bắt đầu điểm danh</p>
-        <button onclick="startApp()">VÀO HỆ THỐNG</button>
+        <button id="startBtn">VÀO HỆ THỐNG</button>
     </div>
 
     <div id="app-screen">
@@ -31,47 +30,46 @@
     </div>
 
     <script>
-        async function startApp() {
+        const startBtn = document.getElementById('startBtn');
+        
+        startBtn.onclick = async () => {
             try {
-                // 1. Cấp quyền Camera
+                // 1. Cấp quyền
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 document.getElementById('video').srcObject = stream;
-                
-                // 2. Chuyển màn hình
                 document.getElementById('welcome-screen').style.display = 'none';
                 document.getElementById('app-screen').style.display = 'flex';
 
-                // 3. Load AI
-                const M = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights';
-                await Promise.all([
-                    faceapi.nets.tinyFaceDetector.loadFromUri(M),
-                    faceapi.nets.faceLandmark6Net.loadFromUri(M),
-                    faceapi.nets.faceRecognitionNet.loadFromUri(M)
-                ]);
+                // 2. Chờ thư viện load
+                if (typeof faceapi === 'undefined') throw new Error("FaceAPI không tải được!");
+
+                // 3. Load Models từ CDN vladmandic (cực kỳ ổn định)
+                const M = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+                await faceapi.nets.tinyFaceDetector.loadFromUri(M);
+                await faceapi.nets.faceLandmark6Net.loadFromUri(M);
+                await faceapi.nets.faceRecognitionNet.loadFromUri(M);
 
                 runLoop();
             } catch (e) {
-                alert("Lỗi quyền truy cập Camera: " + e.message);
+                alert("Lỗi: " + e.message);
             }
-        }
+        };
 
         async function runLoop() {
             const video = document.getElementById('video');
             const body = document.getElementById('body');
             const library = JSON.parse(localStorage.getItem('library') || '[]');
             
-            const matcher = library.length > 0 ? new faceapi.FaceMatcher(library.map(p => 
-                new faceapi.LabeledFaceDescriptors(p.name, [new Float32Array(Object.values(p.descriptor))])
-            )) : null;
-
             setInterval(async () => {
                 const det = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
-                if(det && matcher) {
+                if(det && library.length > 0) {
+                    const matcher = new faceapi.FaceMatcher(library.map(p => 
+                        new faceapi.LabeledFaceDescriptors(p.name, [new Float32Array(Object.values(p.descriptor))])
+                    ));
                     const match = matcher.findBestMatch(det.descriptor);
                     if(match.label !== 'unknown' && match.distance < 0.4) {
-                        const p = library.find(x => x.name === match.label);
-                        if(p && !document.getElementById('row-'+p.name)) {
-                            body.innerHTML += `<tr id="row-${p.name}"><td>${p.name}</td><td>ĐÃ CÓ MẶT</td><td>${new Date().toLocaleTimeString()}</td></tr>`;
+                        if(!document.getElementById('row-'+match.label)) {
+                            body.innerHTML += `<tr id="row-${match.label}"><td>${match.label}</td><td>ĐÃ CÓ MẶT</td><td>${new Date().toLocaleTimeString()}</td></tr>`;
                         }
                     }
                 }
