@@ -6,21 +6,26 @@
     <title>AI Security Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        body { margin: 0; background: #000; color: #00f7ff; font-family: 'Orbitron', sans-serif; overflow: hidden; }
-        #app { position: relative; width: 100vw; height: 100vh; }
+        body { margin: 0; background: #000; color: #00f7ff; font-family: 'Courier New', monospace; overflow: hidden; }
+        #app-container { position: relative; width: 100vw; height: 100vh; }
         #video, #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
         #overlay { z-index: 2; }
-        .hud-border { position: absolute; border: 2px solid #00f7ff; pointer-events: none; transition: all 0.2s ease; }
-        #status { position: absolute; top: 20px; left: 20px; z-index: 3; font-size: 14px; letter-spacing: 2px; }
-        #start-btn { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); padding: 15px 40px; background: transparent; border: 2px solid #00f7ff; color: #00f7ff; z-index: 4; cursor: pointer; }
+        #ui-status { position: absolute; top: 20px; left: 20px; z-index: 3; font-size: 1.2rem; }
+        #input-panel { position: absolute; bottom: 20px; right: 20px; width: 280px; background: rgba(0,0,0,0.85); border: 2px solid #00f7ff; padding: 15px; border-radius: 10px; display: none; z-index: 5; }
+        input { background: #111; border: 1px solid #00f7ff; color: #fff; width: 90%; margin: 5px 0; padding: 8px; }
+        .btn { cursor: pointer; background: #00f7ff; color: #000; font-weight: bold; padding: 10px; border: none; width: 100%; }
     </style>
 </head>
 <body>
-    <div id="app">
+    <div id="app-container">
         <video id="video" autoplay muted playsinline></video>
         <canvas id="overlay"></canvas>
-        <div id="status">HỆ THỐNG SẴN SÀNG</div>
-        <button id="start-btn" onclick="startApp()">KHỞI ĐỘNG SCANNER</button>
+        <div id="ui-status">LOADING SYSTEM...</div>
+        <div id="input-panel">
+            <input id="name" placeholder="HỌ TÊN">
+            <input id="unit" placeholder="ĐƠN VỊ">
+            <button class="btn" onclick="saveData()">LƯU DỮ LIỆU</button>
+        </div>
     </div>
     <script src="app.js"></script>
 </body>
