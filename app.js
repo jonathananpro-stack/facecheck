@@ -1,60 +1,48 @@
 const video = document.getElementById('video');
-const canvas = document.getElementById('overlay');
-const status = document.getElementById('ui-status');
-const panel = document.getElementById('input-panel');
-let db;
+const list = document.getElementById('face-list');
 
-// Khởi tạo DB
-const req = indexedDB.open("FaceSecurityDB", 1);
-req.onupgradeneeded = e => e.target.result.createObjectStore("faces", {keyPath: "id", autoIncrement: true});
-req.onsuccess = e => { db = e.target.result; };
-
-async function startSystem() {
-    document.getElementById('btn-start').style.display = 'none';
-    status.innerText = "ĐANG TẢI AI...";
+async function initSystem() {
+    const URL = 'https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights';
+    await faceapi.nets.tinyFaceDetector.loadFromUri(URL);
     
-    try {
-        const URL = 'https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights';
-        await faceapi.nets.tinyFaceDetector.loadFromUri(URL);
-        
-        status.innerText = "ĐANG KÍCH HOẠT CAMERA...";
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-        video.srcObject = stream;
-        
-        video.oncanplay = () => {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            status.innerText = "SYSTEM ACTIVE";
-            scanLoop();
-        };
-    } catch (err) {
-        status.innerText = "LỖI: " + err.message;
-    }
-}
-
-async function scanLoop() {
-    if (video.paused || video.ended) return;
-
-    const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 128 }));
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+    video.srcObject = stream;
     
-    if (detection) {
-        const { x, y, width, height } = detection.box;
-        ctx.strokeStyle = '#00f7ff';
-        ctx.lineWidth = 4;
-        ctx.strokeRect(x, y, width, height);
-        status.innerText = "ĐÃ PHÁT HIỆN MỤC TIÊU";
-        panel.style.display = 'block';
-    } else {
-        status.innerText = "SCANNING...";
-    }
-    requestAnimationFrame(scanLoop);
+    // Quét mỗi 2 giây để giữ ổn định CPU trên iPhone
+    video.onloadedmetadata = () => setInterval(detectFaces, 2000);
 }
 
-function saveData() {
-    const data = { name: document.getElementById('name').value, unit: document.getElementById('unit').value, time: new Date().toLocaleTimeString() };
-    db.transaction("faces", "readwrite").objectStore("faces").add(data);
-    panel.style.display = 'none';
-    alert("Dữ liệu đã lưu!");
+async function detectFaces() {
+    const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 160 }));
+    list.innerHTML = ''; // Làm sạch danh sách cũ
+    
+    detections.forEach((det, i) => {
+        const card = document.createElement('div');
+        card.className = 'face-card';
+        
+        // Tạo canvas tạm để crop mặt
+        const canvas = document.createElement('canvas');
+        canvas.className = 'thumb';
+        canvas.width = det.box.width;
+        canvas.height = det.box.height;
+        canvas.getContext('2d').drawImage(video, det.box.x, det.box.y, det.box.width, det.box.height, 0, 0, det.box.width, det.box.height);
+        
+        card.innerHTML = `
+            <canvas class="thumb" width="${det.box.width}" height="${det.box.height}"></canvas>
+            <input id="n${i}" placeholder="Họ tên">
+            <button onclick="startVoice('n${i}')">🎤 NHẬP GIỌNG NÓI</button>
+        `;
+        list.appendChild(card);
+        card.querySelector('.thumb').getContext('2d').drawImage(canvas, 0, 0);
+    });
 }
+
+function startVoice(id) {
+    const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    rec.lang = 'vi-VN';
+    rec.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript; };
+    rec.start();
+}
+
+// Khởi chạy khi trang load
+initSystem();
