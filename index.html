@@ -5,26 +5,39 @@
     <title>FaceCheck Pro AI</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; overflow: hidden; }
-        #video-container { width: 100vw; height: 100vh; position: relative; display: flex; align-items: center; justify-content: center; }
-        video { width: 100%; height: 100%; object-fit: cover; }
-        canvas { position: absolute; }
+        body { margin: 0; background: #050505; color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        .view { display: none; height: 100vh; }
+        #camera-view { display: block; position: relative; }
+        #video { width: 100%; height: 100%; object-fit: cover; }
         
-        /* Menu nổi */
-        #menu { position: absolute; top: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 100; }
-        .btn { padding: 15px; background: rgba(0,0,0,0.6); border: 1px solid #fff; color: white; border-radius: 50px; cursor: pointer; backdrop-filter: blur(5px); }
+        .ui-layer { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
+        #dataModal { display: none; position: fixed; top: 10%; left: 5%; width: 90%; background: rgba(20, 20, 20, 0.95); padding: 20px; border-radius: 20px; border: 1px solid #00f7ff; pointer-events:auto; transition: opacity 0.3s ease, transform 0.3s ease; opacity: 0; transform: translateY(20px); }
+        #dataModal.active { display: block !important; opacity: 1; transform: translateY(0); }
         
-        #ai-status { position: absolute; bottom: 30px; width: 100%; text-align: center; font-size: 1.2rem; text-shadow: 0 0 5px #000; }
+        .face-card { background: linear-gradient(145deg, #2a2a2a, #1a1a1a); border-left: 4px solid #00f7ff; padding: 15px; margin: 10px 0; border-radius: 10px; display: flex; align-items: center; gap: 10px; }
+        input { background: #444; border: none; color: #fff; padding: 10px; border-radius: 5px; flex: 1; }
+        button { padding: 10px 20px; background: #28a745; border: none; color: white; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div id="video-container">
+    <div id="camera-view" class="view">
         <video id="video" autoplay muted playsinline></video>
-        <div id="menu">
-            <button class="btn" onclick="toggleCamera()">📷 Đổi Camera</button>
-            <button class="btn" onclick="viewDatabase()">📂 Danh sách</button>
+        <div style="position:absolute; top:20px; right:20px; z-index:100;">
+            <button onclick="showView('admin-view')">📂 Quản lý</button>
         </div>
-        <div id="ai-status">Đang khởi tạo AI...</div>
+    </div>
+
+    <div id="admin-view" class="view" style="padding: 20px; overflow-y: auto;">
+        <button onclick="showView('camera-view')">⬅ Quay lại Camera</button>
+        <button onclick="exportToExcel()" style="background:#ffc107; color:black;">📥 Xuất Báo Cáo (Excel)</button>
+        <h1>Danh sách Nhân sự</h1>
+        <div id="faceList"></div>
+    </div>
+
+    <div id="dataModal">
+        <h2>Xác thực nhân sự</h2>
+        <div id="facesContainer"></div>
+        <button onclick="saveAll()">Lưu tất cả dữ liệu</button>
     </div>
     <script src="app.js"></script>
 </body>
