@@ -3,26 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Security AI</title>
-    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <title>AI Security Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        body { margin: 0; background: #0a0a0a; color: #fff; font-family: 'Segoe UI', sans-serif; }
-        /* Khung Camera nhỏ chuyên nghiệp */
-        #cam-box { width: 100%; height: 300px; background: #000; position: relative; overflow: hidden; border-bottom: 2px solid #00f7ff; }
-        #video { width: 100%; height: 100%; object-fit: cover; }
-        /* Panel nhập liệu chuyên nghiệp */
-        #main-panel { padding: 20px; }
-        .card { background: #1a1a1a; padding: 15px; border-radius: 10px; border: 1px solid #333; margin-top: 10px; }
-        input { width: 95%; padding: 10px; background: #222; border: 1px solid #444; color: #fff; margin: 5px 0; }
-        #btn-start { width: 100%; padding: 20px; background: #00f7ff; color: #000; font-weight: bold; }
+        body { margin: 0; background: #000; color: #00f7ff; font-family: 'Orbitron', sans-serif; overflow: hidden; }
+        #app { position: relative; width: 100vw; height: 100vh; }
+        #video, #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+        #overlay { z-index: 2; }
+        .hud-border { position: absolute; border: 2px solid #00f7ff; pointer-events: none; transition: all 0.2s ease; }
+        #status { position: absolute; top: 20px; left: 20px; z-index: 3; font-size: 14px; letter-spacing: 2px; }
+        #start-btn { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); padding: 15px 40px; background: transparent; border: 2px solid #00f7ff; color: #00f7ff; z-index: 4; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div id="cam-box"><video id="video" autoplay muted playsinline></video></div>
-    <div id="main-panel">
-        <button id="btn-start" onclick="initApp()">KHỞI ĐỘNG HỆ THỐNG GIÁM SÁT</button>
-        <div id="debug" style="color: #00f7ff;">Hệ thống chờ lệnh...</div>
-        <div id="forms"></div>
+    <div id="app">
+        <video id="video" autoplay muted playsinline></video>
+        <canvas id="overlay"></canvas>
+        <div id="status">HỆ THỐNG SẴN SÀNG</div>
+        <button id="start-btn" onclick="startApp()">KHỞI ĐỘNG SCANNER</button>
     </div>
     <script src="app.js"></script>
 </body>
