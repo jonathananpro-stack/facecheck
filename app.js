@@ -1,48 +1,55 @@
 const video = document.getElementById('video');
 const list = document.getElementById('face-list');
+const status = document.getElementById('sys-status');
+let knownFaces = [];
 
-async function initSystem() {
+async function startSystem() {
+    status.innerText = "LOADING_AI...";
     const URL = 'https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights';
     await faceapi.nets.tinyFaceDetector.loadFromUri(URL);
     
     const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
     video.srcObject = stream;
     
-    // Quét mỗi 2 giây để giữ ổn định CPU trên iPhone
-    video.onloadedmetadata = () => setInterval(detectFaces, 2000);
+    video.onloadedmetadata = () => {
+        status.innerText = "SCANNING_ACTIVE";
+        setInterval(detect, 2000);
+    };
 }
 
-async function detectFaces() {
-    const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 160 }));
-    list.innerHTML = ''; // Làm sạch danh sách cũ
-    
-    detections.forEach((det, i) => {
-        const card = document.createElement('div');
-        card.className = 'face-card';
-        
-        // Tạo canvas tạm để crop mặt
-        const canvas = document.createElement('canvas');
-        canvas.className = 'thumb';
-        canvas.width = det.box.width;
-        canvas.height = det.box.height;
-        canvas.getContext('2d').drawImage(video, det.box.x, det.box.y, det.box.width, det.box.height, 0, 0, det.box.width, det.box.height);
-        
-        card.innerHTML = `
-            <canvas class="thumb" width="${det.box.width}" height="${det.box.height}"></canvas>
-            <input id="n${i}" placeholder="Họ tên">
-            <button onclick="startVoice('n${i}')">🎤 NHẬP GIỌNG NÓI</button>
-        `;
-        list.appendChild(card);
-        card.querySelector('.thumb').getContext('2d').drawImage(canvas, 0, 0);
+async function detect() {
+    const dets = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 160 }));
+    dets.forEach(det => {
+        if (!knownFaces.some(f => Math.abs(det.box.x - f.x) < 50)) {
+            renderCard(det);
+            knownFaces.push({ x: det.box.x });
+        }
     });
 }
 
-function startVoice(id) {
-    const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    rec.lang = 'vi-VN';
-    rec.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript; };
-    rec.start();
+function renderCard(det) {
+    const id = Date.now();
+    const card = document.createElement('div');
+    card.className = 'face-card';
+    card.innerHTML = `
+        <div class="hud-mini">NEW_TARGET_DETECTED</div>
+        <canvas id="c${id}"></canvas>
+        <input id="n${id}" placeholder="HỌ TÊN">
+        <button class="btn-act" onclick="confirmTarget(this, ${id})">XÁC NHẬN LƯU</button>
+    `;
+    list.prepend(card);
+    const canvas = document.getElementById('c'+id);
+    canvas.width = det.box.width; canvas.height = det.box.height;
+    canvas.getContext('2d').drawImage(video, det.box.x, det.box.y, det.box.width, det.box.height, 0, 0, det.box.width, det.box.height);
 }
 
-// Khởi chạy khi trang load
-initSystem();
+function confirmTarget(btn, id) {
+    const card = btn.parentElement;
+    card.style.borderLeft = "5px solid #00ff00";
+    card.querySelector('.hud-mini').innerText = "VERIFIED_RECORDED";
+    card.querySelector('.hud-mini').style.color = "#00ff00";
+    btn.innerText = "LOCKED";
+    btn.style.background = "#555";
+}
+
+startSystem();
