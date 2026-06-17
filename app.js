@@ -1,26 +1,27 @@
-import { UI } from './js/ui.js';
-import { detect } from './js/ai.js';
-import { db } from './js/db.js';
-import { Report } from './js/report.js';
-
-const video = document.getElementById('video');
+import { UI } from './js/ui.js'; import { detect } from './js/ai.js'; import { db } from './js/db.js';
+let currentSession = null;
+window.startNewSession = () => {
+    const list = document.getElementById('guest-list').value.split(',').map(n => n.trim());
+    currentSession = db.initSession("Phiên họp mới", list);
+    alert("Đã tạo phiên họp!");
+};
+window.saveProfile = () => {
+    const profile = { name: document.getElementById('name').value, unit: document.getElementById('unit').value, position: document.getElementById('position').value, image: UI.captureFace(document.getElementById('video')), descriptor: Array.from(window.currentDescriptor) };
+    db.saveUser(profile);
+    document.getElementById('info-modal').style.display = 'none';
+};
+window.toggleMenu = UI.toggleMenu; window.showSummary = () => alert("Tổng kết sẽ hiển thị tại đây");
 async function init() {
     const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
-    video.srcObject = stream;
+    document.getElementById('video').srcObject = stream;
     await UI.loadModels();
-    
     setInterval(async () => {
-        const desc = await detect(video);
+        const desc = await detect(document.getElementById('video'));
         if (desc) {
             const match = db.findMatch(desc);
-            if (match) UI.updateAttendance(match.name, new Date().toLocaleTimeString());
+            if (match) { const isExp = db.markPresence(match.name); UI.updateAttendance(match.name, new Date().toLocaleTimeString(), isExp); }
+            else if (confirm("Người lạ! Thêm vào hệ thống?")) UI.showInfoModal(desc);
         }
-    }, 1000);
+    }, 3000);
 }
-
-// Map các hàm vào window để HTML gọi được
-window.toggleMenu = UI.toggleMenu;
-window.saveManual = () => { /* Logic lưu tay */ };
-window.startVoice = UI.startVoice;
-window.exportData = Report.exportCSV;
 init();
