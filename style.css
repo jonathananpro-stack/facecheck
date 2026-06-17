@@ -1,7 +1,0 @@
-.dashboard { display: grid; height: 100vh; grid-template-rows: 60px 1fr 150px; }
-.header { background: #333; color: white; display: flex; align-items: center; padding: 0 20px; }
-.viewport { display: flex; gap: 10px; padding: 10px; }
-#video { background: black; flex: 2; border-radius: 8px; }
-.data-panel { flex: 1; background: #f4f4f4; padding: 15px; border-radius: 8px; }
-.carousel { display: flex; overflow-x: auto; background: #222; padding: 10px; gap: 10px; }
-.face-thumb { min-width: 100px; background: #444; color: white; text-align: center; border-radius: 4px; }
