@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi"><head><meta charset="UTF-8"><title>SEC_CORE Ultimate V6</title>
+<html lang="vi"><head><meta charset="UTF-8"><title>SEC_CORE V6</title>
 <link rel="stylesheet" href="style.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script></head>
 <body>
@@ -16,8 +16,11 @@
         <video id="video" autoplay playsinline muted></video>
         <div id="validation-overlay"></div>
     </div>
-    <div id="train-modal" class="modal"><div class="modal-content">
-        <img id="face-preview"><input id="new-name" placeholder="Tên nhân sự"><button onclick="saveUser()">LƯU</button>
-    </div></div>
+    <div id="history-screen" class="screen" style="display:none;">
+        <button class="back-btn" onclick="navigate('home')"><i class="fa-solid fa-arrow-left"></i></button>
+        <h2 class="glow-text">NHẬT KÝ ĐIỂM DANH</h2>
+        <div id="log-container" style="color:white; width:80%;"></div>
+        <button onclick="Report.downloadCSV()">TẢI XUỐNG CSV</button>
+    </div>
     <script type="module" src="app.js"></script>
 </body></html>
