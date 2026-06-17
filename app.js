@@ -1,38 +1,33 @@
 const video = document.getElementById('video');
-const debug = document.getElementById('debug');
+const status = document.getElementById('status');
+const panel = document.getElementById('input-panel');
 
-async function initApp() {
-    debug.innerText = "Đang nạp AI...";
+async function start() {
     const URL = 'https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights';
-    await Promise.all([faceapi.nets.tinyFaceDetector.loadFromUri(URL), faceapi.nets.faceLandmark68Net.loadFromUri(URL), faceapi.nets.faceRecognitionNet.loadFromUri(URL)]);
-    
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+    await faceapi.nets.tinyFaceDetector.loadFromUri(URL);
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
     video.srcObject = stream;
-    debug.innerText = "Hệ thống đang quét...";
     
-    // Quét liên tục nhưng không chặn UI
-    requestAnimationFrame(detectLoop);
+    video.onloadedmetadata = () => {
+        status.innerText = "ONLINE - SCANNING";
+        scan();
+    };
 }
 
-async function detectLoop() {
-    const dets = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 160 }));
-    
-    if (dets.length > 0) {
-        debug.innerText = "Phát hiện " + dets.length + " nhân sự.";
-        // Chỉ render khi chưa có form, tránh lặp lại làm đơ
-        if (!document.getElementById('form-0')) {
-            renderForms(dets);
-        }
+async function scan() {
+    const det = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 160 }));
+    if (det) {
+        status.innerText = "DETECTED TARGET";
+        panel.style.display = 'block';
+    } else {
+        status.innerText = "SCANNING...";
     }
-    requestAnimationFrame(detectLoop);
+    requestAnimationFrame(scan);
 }
 
-function renderForms(dets) {
-    document.getElementById('forms').innerHTML = dets.map((_, i) => `
-        <div class="card" id="form-${i}">
-            <input placeholder="Họ tên">
-            <input placeholder="Đơn vị">
-            <input placeholder="Chức vụ">
-        </div>
-    `).join('');
+function saveData() {
+    alert("Dữ liệu đã truyền về trung tâm!");
+    panel.style.display = 'none';
 }
+
+start();
