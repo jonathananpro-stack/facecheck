@@ -1,37 +1,14 @@
 <!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8"><title>SEC_CORE Manager V5</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-</head>
+<html lang="vi"><head><meta charset="UTF-8"><title>SEC_CORE Pro</title>
+<link rel="stylesheet" href="style.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+<script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script></head>
 <body>
-    <div id="main-screen" class="screen">
-        <video id="video" autoplay playsinline muted></video>
-        <div class="manager-panel">
-            <div id="status-display">Hệ thống sẵn sàng...</div>
-            <div class="stats-board">
-                <span>Có mặt: <b id="count-present">0</b></span>
-                <button onclick="Report.export()" style="background:#28a745;">Xuất Excel</button>
-            </div>
-            <div class="btn-group">
-                <button onclick="switchCamera()"><i class="fa-solid fa-camera-rotate"></i> Cam</button>
-                <button onclick="document.getElementById('ocr-input').click()"><i class="fa-solid fa-file-import"></i> Nạp DS</button>
-            </div>
-            <input type="file" id="ocr-input" hidden onchange="processOCR(event)">
-        </div>
-        <table id="attendance-table"><tbody id="attendance-body"></tbody></table>
-    </div>
-    <div id="info-modal" class="modal">
-        <div class="modal-content">
-            <img id="face-preview" style="width:100px;border-radius:10px">
-            <input type="text" id="new-name" placeholder="Họ và tên">
-            <input type="text" id="new-unit" placeholder="Đơn vị">
-            <button onclick="saveProfile()">Lưu & Huấn luyện</button>
-        </div>
-    </div>
+    <div id="home-screen" class="screen"><h1>SEC_CORE V6</h1>
+        <div class="grid"><button onclick="navigate('training')">Huấn luyện AI</button><button onclick="navigate('live')">Tạo cuộc họp</button><button onclick="navigate('history')">Lịch sử</button></div></div>
+    <div id="app-screen" class="screen" style="display:none;"><div class="top-nav"><button onclick="navigate('home')"><i class="fa-solid fa-house"></i></button></div>
+        <video id="video" autoplay playsinline muted></video><div id="hud-container"></div><div id="validation-overlay"></div>
+        <table id="attendance-table"><tbody id="attendance-body"></tbody></table></div>
+    <div id="info-modal" class="modal"><div class="modal-content"><img id="face-preview"><input type="text" id="new-name" placeholder="Tên"><button onclick="saveProfile()">Lưu</button></div></div>
     <script type="module" src="app.js"></script>
-</body>
-</html>
+</body></html>
