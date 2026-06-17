@@ -1,7 +1,7 @@
 export const UI = {
     updateAttendance: (n) => {
-        if(!document.getElementById(n)){
-            document.getElementById('attendance-body').innerHTML += `<tr id="${n}"><td>${n}</td></tr>`;
+        if(!document.getElementById('row_'+n)){
+            document.getElementById('attendance-body').innerHTML += `<tr id="row_${n}"><td>${n}</td></tr>`;
             document.getElementById('count-present').innerText = document.querySelectorAll('tr').length;
         }
     },
