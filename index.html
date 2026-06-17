@@ -2,30 +2,27 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FaceCheck Pro AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FaceCheck AI Pro</title>
     <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        body { margin: 0; background: #050505; color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; overflow: hidden; }
         #video { width: 100vw; height: 100vh; object-fit: cover; }
-        #start-btn { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 15px 30px; background: #00f7ff; color: #000; border: none; border-radius: 20px; z-index: 1000; font-weight: bold; }
-        #dataModal { display: none; position: fixed; top: 10%; left: 5%; width: 90%; background: rgba(20, 20, 20, 0.95); padding: 20px; border-radius: 20px; border: 1px solid #00f7ff; transition: opacity 0.3s ease; opacity: 0; z-index: 999; }
-        #dataModal.active { display: block; opacity: 1; }
-        .face-card { background: #1a1a1a; border-left: 4px solid #00f7ff; padding: 15px; margin: 10px 0; border-radius: 10px; }
-        input { background: #333; border: none; color: #fff; padding: 8px; margin: 5px 0; width: 90%; }
-        .menu-btns { position: fixed; top: 20px; right: 20px; z-index: 99; }
+        #start-btn { position: fixed; top: 40%; left: 10%; width: 80%; padding: 20px; background: #00f7ff; border: none; border-radius: 10px; z-index: 999; font-weight: bold; }
+        #debug { position: fixed; bottom: 20px; width: 100%; text-align: center; color: yellow; z-index: 999; }
+        #modal { display: none; position: fixed; top: 10%; left: 5%; width: 90%; background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid #00f7ff; z-index: 2000; }
+        .card { background: #333; padding: 10px; margin: 10px 0; border-radius: 8px; }
+        input { width: 90%; padding: 8px; margin: 5px 0; }
     </style>
 </head>
 <body>
-    <button id="start-btn" onclick="startApp()">KHỞI ĐỘNG HỆ THỐNG</button>
-    <div class="menu-btns">
-        <button onclick="exportToExcel()">📥 Xuất Excel</button>
-    </div>
+    <button id="start-btn" onclick="initApp()">KHỞI ĐỘNG HỆ THỐNG</button>
+    <div id="debug">Chờ khởi động...</div>
     <video id="video" autoplay muted playsinline></video>
-    <div id="dataModal">
-        <h2>Xác thực nhân sự</h2>
-        <div id="facesContainer"></div>
-        <button onclick="saveAll()">Lưu tất cả dữ liệu</button>
+    <div id="modal">
+        <h3>Phát hiện nhân sự</h3>
+        <div id="forms"></div>
+        <button onclick="saveAll()">LƯU DỮ LIỆU</button>
     </div>
     <script src="app.js"></script>
 </body>
