@@ -5,95 +5,68 @@
     <title>SEC_CORE Ultimate V6</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        body { margin: 0; background: #050505; color: #00ffcc; font-family: 'Courier New', monospace; }
-        .page { display: none; height: 100vh; flex-direction: column; align-items: center; padding: 20px; overflow-y: auto; }
+        body { background: #050505; color: #00ffcc; font-family: sans-serif; }
+        .page { display: none; height: 100vh; flex-direction: column; align-items: center; }
         #home { display: flex; }
-        .canvas-container { position: relative; margin-top: 20px; }
-        #overlay { position: absolute; top: 0; left: 0; pointer-events: none; }
-        .queue-item { border: 1px solid #00ffcc; padding: 10px; margin: 10px; background: #111; display: flex; align-items: center; gap: 10px; }
-        button { padding: 10px 20px; cursor: pointer; background: #111; color: #00ffcc; border: 1px solid #00ffcc; }
-        button:hover { background: #00ffcc; color: #000; }
+        #display-area { position: relative; display: inline-block; }
+        #preview-img { max-width: 600px; display: block; }
+        .face-box { border: 3px solid #00ffcc; position: absolute; }
     </style>
 </head>
 <body>
-
     <div id="home" class="page" style="display:flex;">
         <h1>SEC_CORE V6</h1>
         <button onclick="showPage('train')">HUẤN LUYỆN AI</button>
-        <button onclick="showPage('cam')">TẠO CUỘC HỌP</button>
     </div>
 
     <div id="train" class="page">
-        <h2>HUẤN LUYỆN AI - NẠP DỮ LIỆU</h2>
-        <input type="file" id="media-input" accept="image/*" onchange="processMedia(event)">
-        <p id="status">🔍 Chọn file ảnh (khuyên dùng định dạng rõ nét)...</p>
-        <div class="canvas-container">
-            <img id="media-preview" style="max-width: 600px; display:none;">
-            <canvas id="overlay"></canvas>
+        <h2>TRẠNG THÁI: <span id="status">Đang tải model...</span></h2>
+        <input type="file" id="upload" accept="image/*" onchange="detect(event)">
+        <div id="display-area">
+            <img id="preview-img">
         </div>
-        <div id="queue-container"></div>
         <button onclick="showPage('home')">QUAY LẠI</button>
     </div>
 
     <script>
-        // Load Model
-        Promise.all([
-            faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/'),
-        ]).then(() => console.log("Model AI Loaded!"));
+        // Tải Model
+        const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+        Promise.all([faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL)])
+               .then(() => document.getElementById('status').innerText = "AI SẴN SÀNG");
 
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
             document.getElementById(id).style.display = 'flex';
         }
 
-        async function processMedia(e) {
-            const img = document.getElementById('media-preview');
-            const overlay = document.getElementById('overlay');
-            const status = document.getElementById('status');
-            const container = document.getElementById('queue-container');
-            container.innerHTML = "";
-
+        async function detect(e) {
+            const img = document.getElementById('preview-img');
+            const display = document.getElementById('display-area');
             img.src = URL.createObjectURL(e.target.files[0]);
+            
             img.onload = async () => {
-                status.innerText = "⚙️ Đang phân tích khuôn mặt...";
+                document.getElementById('status').innerText = "Đang quét...";
+                // Xóa các khung cũ
+                document.querySelectorAll('.face-box').forEach(b => b.remove());
                 
-                // Tối ưu hóa: Resize ảnh trước khi quét để AI nhận diện tốt hơn
-                const scale = Math.min(800 / img.naturalWidth, 1);
-                const width = img.naturalWidth * scale;
-                const height = img.naturalHeight * scale;
-
-                const detections = await faceapi.detectAllFaces(img, new faceapi.TinyFaceDetectorOptions({ inputSize: 224 }));
+                const detections = await faceapi.detectAllFaces(img, new faceapi.TinyFaceDetectorOptions({ inputSize: 128 }));
                 
-                overlay.width = width;
-                overlay.height = height;
-                const ctx = overlay.getContext('2d');
-                ctx.strokeStyle = '#00ffcc'; ctx.lineWidth = 3;
-
                 if (detections.length === 0) {
-                    status.innerText = "❌ Không tìm thấy khuôn mặt. Ảnh chất lượng quá thấp hoặc quá tối.";
+                    document.getElementById('status').innerText = "❌ Không tìm thấy mặt (Thử ảnh khác)";
                 } else {
-                    status.innerText = `✅ Tìm thấy ${detections.length} khuôn mặt!`;
-                    detections.forEach((det, i) => {
-                        ctx.strokeRect(det.box.x * scale, det.box.y * scale, det.box.width * scale, det.box.height * scale);
-                        
-                        const item = document.createElement('div');
-                        item.className = 'queue-item';
-                        item.innerHTML = `
-                            <input type="text" id="name-${i}" placeholder="Tên nhân sự...">
-                            <button onclick="useMic('name-${i}')">🎙️ Voice</button>
-                            <button onclick="alert('Đã lưu dữ liệu!')">LƯU</button>
-                        `;
-                        container.appendChild(item);
+                    document.getElementById('status').innerText = `✅ Tìm thấy ${detections.length} khuôn mặt`;
+                    detections.forEach(det => {
+                        const box = document.createElement('div');
+                        box.className = 'face-box';
+                        const scale = img.clientWidth / img.naturalWidth;
+                        box.style.left = (det.box.x * scale) + 'px';
+                        box.style.top = (det.box.y * scale) + 'px';
+                        box.style.width = (det.box.width * scale) + 'px';
+                        box.style.height = (det.box.height * scale) + 'px';
+                        display.appendChild(box);
                     });
                 }
             };
-        }
-
-        function useMic(id) {
-            const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            rec.lang = 'vi-VN';
-            rec.start();
-            rec.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript; };
         }
     </script>
 </body>
