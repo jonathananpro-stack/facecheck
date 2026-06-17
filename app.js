@@ -1,55 +1,36 @@
+import { db } from './js/db.js';
+import { detect } from './js/ai.js';
+import { UI } from './js/ui.js';
+
 const video = document.getElementById('video');
-const list = document.getElementById('face-list');
-const status = document.getElementById('sys-status');
-let knownFaces = [];
 
-async function startSystem() {
-    status.innerText = "LOADING_AI...";
-    const URL = 'https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights';
-    await faceapi.nets.tinyFaceDetector.loadFromUri(URL);
-    
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+async function initSystem() {
+    // 1. Load models cho FaceAPI
+    await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+    await faceapi.nets.faceLandmark6Net.loadFromUri('/models');
+    await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+
+    // 2. Mở Camera
+    const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
     video.srcObject = stream;
-    
-    video.onloadedmetadata = () => {
-        status.innerText = "SCANNING_ACTIVE";
-        setInterval(detect, 2000);
-    };
-}
 
-async function detect() {
-    const dets = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 160 }));
-    dets.forEach(det => {
-        if (!knownFaces.some(f => Math.abs(det.box.x - f.x) < 50)) {
-            renderCard(det);
-            knownFaces.push({ x: det.box.x });
+    // 3. Vòng lặp chính
+    setInterval(async () => {
+        const descriptor = await detect(video);
+        if (!descriptor) return;
+
+        const library = db.getAll();
+        const matcher = new faceapi.FaceMatcher(library.map(p => p.descriptor));
+        const match = matcher.findBestMatch(descriptor);
+
+        if (match.distance < 0.4) {
+            const person = library.find(p => p.name === match.label);
+            if (person) {
+                UI.updateTable(person.name, new Date().toLocaleTimeString());
+                if (person.isVIP) UI.alertVIP(person.name);
+            }
         }
-    });
+    }, 1000);
 }
 
-function renderCard(det) {
-    const id = Date.now();
-    const card = document.createElement('div');
-    card.className = 'face-card';
-    card.innerHTML = `
-        <div class="hud-mini">NEW_TARGET_DETECTED</div>
-        <canvas id="c${id}"></canvas>
-        <input id="n${id}" placeholder="HỌ TÊN">
-        <button class="btn-act" onclick="confirmTarget(this, ${id})">XÁC NHẬN LƯU</button>
-    `;
-    list.prepend(card);
-    const canvas = document.getElementById('c'+id);
-    canvas.width = det.box.width; canvas.height = det.box.height;
-    canvas.getContext('2d').drawImage(video, det.box.x, det.box.y, det.box.width, det.box.height, 0, 0, det.box.width, det.box.height);
-}
-
-function confirmTarget(btn, id) {
-    const card = btn.parentElement;
-    card.style.borderLeft = "5px solid #00ff00";
-    card.querySelector('.hud-mini').innerText = "VERIFIED_RECORDED";
-    card.querySelector('.hud-mini').style.color = "#00ff00";
-    btn.innerText = "LOCKED";
-    btn.style.background = "#555";
-}
-
-startSystem();
+initSystem();
