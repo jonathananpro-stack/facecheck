@@ -2,71 +2,103 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>SEC_CORE Ultimate V6</title>
+    <title>SEC_CORE Ultimate V8</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        body { background: #050505; color: #00ffcc; font-family: sans-serif; }
-        .page { display: none; height: 100vh; flex-direction: column; align-items: center; }
+        body { background: #050505; color: #00ffcc; font-family: 'Courier New', monospace; text-align: center; }
+        .page { display: none; height: 100vh; flex-direction: column; align-items: center; padding: 20px; }
         #home { display: flex; }
-        #display-area { position: relative; display: inline-block; }
-        #preview-img { max-width: 600px; display: block; }
-        .face-box { border: 3px solid #00ffcc; position: absolute; }
+        #display-area { position: relative; display: inline-block; margin-top: 10px; }
+        #preview-media { max-width: 600px; display: block; border: 2px solid #00ffcc; }
+        .face-box { border: 4px solid #00ffcc; position: absolute; }
+        button { padding: 15px 30px; margin: 10px; cursor: pointer; background: #111; color: #00ffcc; border: 1px solid #00ffcc; }
     </style>
 </head>
 <body>
+
     <div id="home" class="page" style="display:flex;">
-        <h1>SEC_CORE V6</h1>
+        <h1>SEC_CORE V8</h1>
         <button onclick="showPage('train')">HUẤN LUYỆN AI</button>
     </div>
 
     <div id="train" class="page">
-        <h2>TRẠNG THÁI: <span id="status">Đang tải model...</span></h2>
-        <input type="file" id="upload" accept="image/*" onchange="detect(event)">
-        <div id="display-area">
-            <img id="preview-img">
+        <h2 id="status">Đang tải Model...</h2>
+        <div style="margin-bottom:10px;">
+            <input type="file" id="upload" accept="image/*" onchange="processFile(event)">
+            <button onclick="startCamera()">📷 BẬT CAMERA</button>
+            <button id="snap-btn" style="display:none;" onclick="captureCam()">CHỤP ẢNH</button>
         </div>
-        <button onclick="showPage('home')">QUAY LẠI</button>
+        <div id="display-area">
+            <video id="preview-media" autoplay playsinline muted style="display:none;"></video>
+            <img id="img-preview" style="display:none; max-width:600px;">
+        </div>
+        <button onclick="location.reload()">QUAY LẠI</button>
     </div>
 
     <script>
-        // Tải Model
         const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
-        Promise.all([faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL)])
-               .then(() => document.getElementById('status').innerText = "AI SẴN SÀNG");
+        async function init() {
+            await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
+            document.getElementById('status').innerText = "AI SẴN SÀNG";
+        }
+        init();
 
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
             document.getElementById(id).style.display = 'flex';
         }
 
-        async function detect(e) {
-            const img = document.getElementById('preview-img');
-            const display = document.getElementById('display-area');
+        // XỬ LÝ ẢNH TỪ FILE
+        async function processFile(e) {
+            const img = document.getElementById('img-preview');
             img.src = URL.createObjectURL(e.target.files[0]);
+            img.style.display = 'block';
+            document.getElementById('preview-media').style.display = 'none';
+            img.onload = () => detect(img);
+        }
+
+        // CAMERA
+        async function startCamera() {
+            const video = document.getElementById('preview-media');
+            video.style.display = 'block';
+            document.getElementById('img-preview').style.display = 'none';
+            document.getElementById('snap-btn').style.display = 'inline-block';
+            video.srcObject = await navigator.mediaDevices.getUserMedia({ video: true });
+        }
+
+        async function captureCam() {
+            const video = document.getElementById('preview-media');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            const img = document.getElementById('img-preview');
+            img.src = canvas.toDataURL();
+            img.style.display = 'block';
+            video.style.display = 'none';
+            detect(img);
+        }
+
+        // THUẬT TOÁN NHẬN DIỆN
+        async function detect(input) {
+            document.getElementById('status').innerText = "Đang quét...";
+            document.querySelectorAll('.face-box').forEach(b => b.remove());
+            const detections = await faceapi.detectAllFaces(input, new faceapi.SsdMobilenetv1Options());
             
-            img.onload = async () => {
-                document.getElementById('status').innerText = "Đang quét...";
-                // Xóa các khung cũ
-                document.querySelectorAll('.face-box').forEach(b => b.remove());
-                
-                const detections = await faceapi.detectAllFaces(img, new faceapi.TinyFaceDetectorOptions({ inputSize: 128 }));
-                
-                if (detections.length === 0) {
-                    document.getElementById('status').innerText = "❌ Không tìm thấy mặt (Thử ảnh khác)";
-                } else {
-                    document.getElementById('status').innerText = `✅ Tìm thấy ${detections.length} khuôn mặt`;
-                    detections.forEach(det => {
-                        const box = document.createElement('div');
-                        box.className = 'face-box';
-                        const scale = img.clientWidth / img.naturalWidth;
-                        box.style.left = (det.box.x * scale) + 'px';
-                        box.style.top = (det.box.y * scale) + 'px';
-                        box.style.width = (det.box.width * scale) + 'px';
-                        box.style.height = (det.box.height * scale) + 'px';
-                        display.appendChild(box);
-                    });
-                }
-            };
+            if (detections.length === 0) {
+                document.getElementById('status').innerText = "❌ Không thấy mặt!";
+            } else {
+                document.getElementById('status').innerText = `✅ Thấy ${detections.length} khuôn mặt!`;
+                detections.forEach(det => {
+                    const box = document.createElement('div');
+                    box.className = 'face-box';
+                    const scale = input.clientWidth / input.naturalWidth;
+                    box.style.left = (det.box.x * scale) + 'px';
+                    box.style.top = (det.box.y * scale) + 'px';
+                    box.style.width = (det.box.width * scale) + 'px';
+                    box.style.height = (det.box.height * scale) + 'px';
+                    document.getElementById('display-area').appendChild(box);
+                });
+            }
         }
     </script>
 </body>
