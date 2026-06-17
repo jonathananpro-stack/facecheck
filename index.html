@@ -1,35 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+    <meta charset="UTF-8">
+    <title>SEC_CORE_V2_PRO</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 </head>
 <body>
-    <video id="video" autoplay playsinline muted></video>
-    <button id="btn">BẮT ĐẦU</button>
-    <div id="status"></div>
 
-    <script>
-        const video = document.getElementById('video');
-        const status = document.getElementById('status');
+    <div id="sidebar">
+        <button onclick="toggleMenu()">☰ Đóng Menu</button>
+        <div class="input-box">
+            <input type="text" id="manual-name" placeholder="Nhập tên nhân viên...">
+            <button onclick="saveManual()">Lưu thủ công</button>
+            <button onclick="startVoice()">🎙️ Nhập giọng nói</button>
+        </div>
+        <hr>
+        <button onclick="exportData()">📥 Xuất báo cáo CSV</button>
+    </div>
 
-        document.getElementById('btn').onclick = async () => {
-            status.innerText = "Đang mở camera...";
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            video.srcObject = stream;
-            
-            status.innerText = "Đang tải AI...";
-            const modelPath = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
-            await faceapi.loadTinyFaceDetectorModel(modelPath);
-            await faceapi.loadFaceLandmarkModel(modelPath);
-            await faceapi.loadFaceRecognitionModel(modelPath);
-            
-            status.innerText = "AI đã sẵn sàng. Đang quét...";
-            
-            setInterval(async () => {
-                const det = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions());
-                if (det) status.innerText = "Đã thấy khuôn mặt!";
-            }, 1000);
-        };
-    </script>
+    <div id="main-content">
+        <button onclick="toggleMenu()">☰ Menu</button>
+        <video id="video" autoplay playsinline muted></video>
+        <table id="attendance-table">
+            <thead><tr><th>TÊN</th><th>TRẠNG THÁI</th><th>GIỜ</th></tr></thead>
+            <tbody id="attendance-body"></tbody>
+        </table>
+    </div>
+
+    <script type="module" src="app.js"></script>
 </body>
 </html>
