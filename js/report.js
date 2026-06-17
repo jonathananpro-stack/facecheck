@@ -1,1 +1,1 @@
-export const Report = { export: () => { alert("Xuất báo cáo thành công!"); } };
+export const Report = { export: () => { console.log("Exporting..."); } };
