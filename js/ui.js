@@ -1,30 +1,34 @@
 export const UI = {
-    updateTable: (name, time) => {
+    toggleMenu: () => {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('main-content').classList.toggle('active');
+    },
+
+    updateAttendance: (name, time) => {
         const body = document.getElementById('attendance-body');
-        let row = document.getElementById(`row-${name}`);
-        
-        // Nếu nhân viên chưa có trong bảng, tạo mới hàng
-        if (!row) {
-            row = document.createElement('tr');
-            row.id = `row-${name}`;
-            row.innerHTML = `
-                <td>${name}</td>
-                <td class="status">ĐÃ CÓ MẶT</td>
-                <td class="time">${time}</td>
-            `;
-            body.appendChild(row);
-        } else {
-            // Nếu đã có rồi, chỉ cập nhật giờ nếu cần
-            row.querySelector('.time').innerText = time;
-            row.querySelector('.status').innerText = "ĐÃ CÓ MẶT";
-            row.style.background = "#005500"; // Đổi màu xanh
+        if (!document.getElementById('row-' + name)) {
+            body.innerHTML += `
+                <tr id="row-${name}">
+                    <td>${name}</td>
+                    <td>ĐÃ CÓ MẶT</td>
+                    <td>${time}</td>
+                </tr>`;
         }
     },
-    
-    alertVIP: (name) => {
-        const box = document.getElementById('vip-alert-box');
-        box.innerText = `⚠️ CẢNH BÁO: VIP ${name} ĐÃ CÓ MẶT!`;
-        box.style.display = 'block';
-        setTimeout(() => box.style.display = 'none', 3000);
+
+    startVoice: () => {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'vi-VN';
+        recognition.onresult = (e) => {
+            document.getElementById('manual-name').value = e.results[0][0].transcript;
+        };
+        recognition.start();
+    },
+
+    loadModels: async () => {
+        const M = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+        await faceapi.nets.tinyFaceDetector.load(M);
+        await faceapi.nets.faceLandmark6Net.load(M);
+        await faceapi.nets.faceRecognitionNet.load(M);
     }
 };
