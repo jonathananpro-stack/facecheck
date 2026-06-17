@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FaceCheck AI Pro</title>
+    <title>Pro Security AI</title>
     <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; overflow: hidden; }
-        #video { width: 100vw; height: 100vh; object-fit: cover; }
-        #start-btn { position: fixed; top: 40%; left: 10%; width: 80%; padding: 20px; background: #00f7ff; border: none; border-radius: 10px; z-index: 999; font-weight: bold; }
-        #debug { position: fixed; bottom: 20px; width: 100%; text-align: center; color: yellow; z-index: 999; }
-        #modal { display: none; position: fixed; top: 10%; left: 5%; width: 90%; background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid #00f7ff; z-index: 2000; }
-        .card { background: #333; padding: 10px; margin: 10px 0; border-radius: 8px; }
-        input { width: 90%; padding: 8px; margin: 5px 0; }
+        body { margin: 0; background: #0a0a0a; color: #fff; font-family: 'Segoe UI', sans-serif; }
+        /* Khung Camera nhỏ chuyên nghiệp */
+        #cam-box { width: 100%; height: 300px; background: #000; position: relative; overflow: hidden; border-bottom: 2px solid #00f7ff; }
+        #video { width: 100%; height: 100%; object-fit: cover; }
+        /* Panel nhập liệu chuyên nghiệp */
+        #main-panel { padding: 20px; }
+        .card { background: #1a1a1a; padding: 15px; border-radius: 10px; border: 1px solid #333; margin-top: 10px; }
+        input { width: 95%; padding: 10px; background: #222; border: 1px solid #444; color: #fff; margin: 5px 0; }
+        #btn-start { width: 100%; padding: 20px; background: #00f7ff; color: #000; font-weight: bold; }
     </style>
 </head>
 <body>
-    <button id="start-btn" onclick="initApp()">KHỞI ĐỘNG HỆ THỐNG</button>
-    <div id="debug">Chờ khởi động...</div>
-    <video id="video" autoplay muted playsinline></video>
-    <div id="modal">
-        <h3>Phát hiện nhân sự</h3>
+    <div id="cam-box"><video id="video" autoplay muted playsinline></video></div>
+    <div id="main-panel">
+        <button id="btn-start" onclick="initApp()">KHỞI ĐỘNG HỆ THỐNG GIÁM SÁT</button>
+        <div id="debug" style="color: #00f7ff;">Hệ thống chờ lệnh...</div>
         <div id="forms"></div>
-        <button onclick="saveAll()">LƯU DỮ LIỆU</button>
     </div>
     <script src="app.js"></script>
 </body>
