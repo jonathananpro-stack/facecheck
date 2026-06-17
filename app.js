@@ -1,27 +1,40 @@
-import { UI } from './js/ui.js'; import { detect } from './js/ai.js'; import { db } from './js/db.js';
-import { Report } from './js/report.js';
+import { UI } from './js/ui.js'; import { detect } from './js/ai.js'; 
+import { db } from './js/db.js'; import { Report } from './js/report.js';
 
 window.navigate = async (page) => {
-    document.getElementById('home-screen').style.display = page === 'home' ? 'flex' : 'none';
-    document.getElementById('app-screen').style.display = page === 'home' ? 'none' : 'flex';
-    if(page === 'history') Report.downloadCSV();
-    else if(page !== 'home') {
+    // 1. Tắt toàn bộ màn hình
+    document.getElementById('home-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display = 'none';
+    document.getElementById('history-screen').style.display = 'none';
+
+    // 2. Ngắt Camera tuyệt đối
+    const v = document.getElementById('video');
+    if (v.srcObject) { v.srcObject.getTracks().forEach(t => t.stop()); v.srcObject = null; }
+
+    // 3. Xử lý logic theo trang
+    if (page === 'home') {
+        document.getElementById('home-screen').style.display = 'flex';
+    } else if (page === 'history') {
+        document.getElementById('history-screen').style.display = 'flex';
+        document.getElementById('log-container').innerText = JSON.stringify(localStorage.getItem('logs'));
+    } else {
+        document.getElementById('app-screen').style.display = 'flex';
         await UI.loadModels();
         const video = await UI.initCamera();
         const loop = async () => {
+            if (document.getElementById('app-screen').style.display !== 'flex') return;
             const desc = await detect(video);
             if(desc) {
                 const match = db.findMatch(desc);
                 if(match) UI.showValidation(match.name);
-                else UI.showTrain(desc, UI.crop(video));
             }
             requestAnimationFrame(loop);
         };
         loop();
     }
 };
-window.saveUser = () => {
-    db.saveUser({name: document.getElementById('new-name').value, descriptor: window.tempDesc});
-    document.getElementById('train-modal').style.display = 'none';
+
+window.handleValidation = (n) => { 
+    Report.saveRecord(n, "Unit", "Present"); 
+    document.getElementById('validation-overlay').style.display = 'none'; 
 };
-window.handleValidation = (n) => { Report.saveRecord(n, "Unit", "Present"); document.getElementById('validation-overlay').style.display = 'none'; };
