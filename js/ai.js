@@ -1,3 +1,4 @@
-export async function detect(v) { 
-    return await faceapi.detectSingleFace(v, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor().then(r=>r?r.descriptor:null); 
+export async function detect(v) {
+    const res = await faceapi.detectSingleFace(v, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+    return res ? res.descriptor : null;
 }
