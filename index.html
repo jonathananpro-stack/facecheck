@@ -1,27 +1,24 @@
 <!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8"><title>SEC_CORE Neural System</title>
-    <link rel="stylesheet" href="style.css">
-    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-</head>
+<html lang="vi"><head><meta charset="UTF-8"><title>SEC_CORE Ultimate V6</title>
+<link rel="stylesheet" href="style.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script></head>
 <body>
     <div id="home-screen" class="screen">
         <h1 class="glow-text">SEC_CORE V6</h1>
         <div class="grid">
-            <button onclick="navigate('training')">Huấn luyện AI</button>
-            <button onclick="navigate('live')">Tạo cuộc họp</button>
-            <button onclick="navigate('history')">Lịch sử</button>
+            <button onclick="navigate('training')">HUẤN LUYỆN AI</button>
+            <button onclick="navigate('live')">TẠO CUỘC HỌP</button>
+            <button onclick="navigate('history')">LỊCH SỬ</button>
         </div>
     </div>
     <div id="app-screen" class="screen" style="display:none;">
-        <button class="back-btn" onclick="navigate('home')">QUAY LẠI</button>
-        <h2 id="screen-title" class="glow-text">SYSTEM ACTIVE</h2>
+        <button class="back-btn" onclick="navigate('home')"><i class="fa-solid fa-arrow-left"></i></button>
         <video id="video" autoplay playsinline muted></video>
-        <div id="hud-container"></div>
+        <div id="status-bar">HỆ THỐNG SẴN SÀNG</div>
         <div id="validation-overlay"></div>
     </div>
+    <div id="train-modal" class="modal"><div class="modal-content">
+        <img id="face-preview"><input id="new-name" placeholder="Tên nhân sự"><button onclick="saveUser()">LƯU</button>
+    </div></div>
     <script type="module" src="app.js"></script>
-</body>
-</html>
+</body></html>
