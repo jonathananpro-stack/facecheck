@@ -2,47 +2,35 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>FaceCheck - Đăng nhập</title>
-    <link rel="stylesheet" href="./style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro AI Security</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <style>
+        body { margin: 0; background: #000; color: #00f7ff; font-family: 'Courier New', monospace; }
+        #app-container { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+        video { width: 100%; height: 100%; object-fit: cover; }
+        canvas { position: absolute; top: 0; left: 0; }
+        
+        /* HUD UI */
+        #hud-overlay { position: absolute; top: 20px; left: 20px; z-index: 10; pointer-events: none; }
+        #input-panel { position: absolute; bottom: 20px; right: 20px; width: 300px; background: rgba(0,0,0,0.8); border: 1px solid #00f7ff; padding: 15px; border-radius: 10px; display: none; }
+        input { background: #111; border: 1px solid #00f7ff; color: #fff; width: 100%; margin-bottom: 5px; padding: 5px; }
+        .btn { cursor: pointer; background: #00f7ff; color: #000; font-weight: bold; padding: 10px; border: none; width: 100%; }
+    </style>
 </head>
 <body>
-    <div class="auth-container">
-        <div class="logo-fallback" style="margin: 0 auto 16px auto;">📸</div>
-        <h1>FaceCheck</h1>
-        <p class="subtitle">Hệ thống điểm danh ngoại tuyến an toàn</p>
-        <form id="loginForm" autocomplete="off">
-            <div class="form-group">
-                <label>Tên đăng nhập</label>
-                <input type="text" id="username" placeholder="Ví dụ: admin" required>
-            </div>
-            <div class="form-group">
-                <label>Mật khẩu</label>
-                <input type="password" id="password" placeholder="Nhập mật khẩu" required>
-            </div>
-            <div class="flex-row">
-                <div class="checkbox-group">
-                    <input type="checkbox" id="rememberMe">
-                    <label for="rememberMe" style="margin-bottom:0; font-weight:normal;">Ghi nhớ đăng nhập</label>
-                </div>
-                <span id="networkStatus" style="font-size:12px; color:var(--text-muted);">Ngoại tuyến 🟢</span>
-            </div>
-            <button type="submit" class="btn btn-primary">Đăng nhập</button>
-            <button type="button" class="btn btn-secondary" onclick="window.location.href='./register.html'">Đăng ký tài khoản mới</button>
-        </form>
+    <div id="app-container">
+        <video id="video" autoplay muted playsinline></video>
+        <div id="hud-overlay">
+            <h2 style="margin:0">SYSTEM SCANNING...</h2>
+            <div id="status">INIT CAMERA</div>
+        </div>
+        <div id="input-panel">
+            <input id="name" placeholder="HỌ TÊN">
+            <input id="unit" placeholder="ĐƠN VỊ">
+            <button class="btn" onclick="saveData()">CẬP NHẬT DỮ LIỆU</button>
+        </div>
     </div>
-    <script src="./auth.js"></script>
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const success = await AuthManager.login(
-                document.getElementById('username').value.trim(),
-                document.getElementById('password').value,
-                document.getElementById('rememberMe').checked
-            );
-            if (success) window.location.href = './dashboard.html';
-            else alert('Tài khoản hoặc mật khẩu không đúng!');
-        });
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
