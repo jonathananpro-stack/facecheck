@@ -5,64 +5,79 @@
     <title>SEC_CORE Ultimate V6</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        body { margin: 0; background: #050505; color: #00ffcc; font-family: 'Courier New', monospace; overflow: hidden; }
-        .page { display: none; height: 100vh; flex-direction: column; align-items: center; justify-content: center; }
+        body { margin: 0; background: #050505; color: #00ffcc; font-family: 'Courier New', monospace; }
+        .page { display: none; height: 100vh; flex-direction: column; align-items: center; padding: 20px; }
+        .grid { display: flex; gap: 20px; }
+        .queue-item { border: 1px solid #00ffcc; padding: 10px; margin: 5px; display: inline-block; }
+        button { padding: 15px; cursor: pointer; background: #111; color: #00ffcc; border: 1px solid #00ffcc; }
         #home { display: flex; }
-        video { width: 60%; border: 2px solid #00ffcc; margin-top: 20px; }
-        button { padding: 20px 40px; margin: 10px; cursor: pointer; background: transparent; color: #00ffcc; border: 1px solid #00ffcc; font-weight: bold; transition: 0.3s; }
-        button:hover { background: #00ffcc; color: #000; }
-        .glow-text { text-shadow: 0 0 10px #00ffcc; }
     </style>
 </head>
 <body>
 
-    <!-- MÀN HÌNH CHỦ -->
     <div id="home" class="page">
-        <h1 class="glow-text">SEC_CORE V6</h1>
+        <h1>SEC_CORE V6</h1>
         <button onclick="showPage('train')">HUẤN LUYỆN AI</button>
         <button onclick="showPage('cam')">TẠO CUỘC HỌP</button>
-        <button onclick="showPage('report')">BÁO CÁO</button>
     </div>
 
-    <!-- MÀN HÌNH HUẤN LUYỆN -->
     <div id="train" class="page">
-        <h2 class="glow-text">HUẤN LUYỆN AI</h2>
-        <video id="v-train" autoplay playsinline muted></video>
-        <button onclick="showPage('home')">QUAY LẠI</button>
-    </div>
-
-    <!-- MÀN HÌNH CAMERA -->
-    <div id="cam" class="page">
-        <video id="v-cam" autoplay playsinline muted></video>
-        <button onclick="showPage('home')">QUAY LẠI</button>
-    </div>
-
-    <!-- MÀN HÌNH BÁO CÁO -->
-    <div id="report" class="page">
-        <h2 class="glow-text">NHẬT KÝ ĐIỂM DANH</h2>
+        <h2>HUẤN LUYỆN AI - NẠP DỮ LIỆU</h2>
+        <input type="file" id="media-input" accept="image/*,video/*" onchange="handleInput(event)">
+        <div id="queue-container"><h3>HÀNG CHỜ XỬ LÝ</h3></div>
         <button onclick="showPage('home')">QUAY LẠI</button>
     </div>
 
     <script>
-        async function showPage(pageId) {
-            // Ẩn tất cả
+        function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-            // Hiện trang chọn
-            document.getElementById(pageId).style.display = 'flex';
+            document.getElementById(id).style.display = 'flex';
+        }
 
-            // Ngắt tất cả camera cũ
-            ['v-train', 'v-cam'].forEach(id => {
-                const v = document.getElementById(id);
-                if(v.srcObject) v.srcObject.getTracks().forEach(t => t.stop());
-            });
+        // XỬ LÝ ĐA NGUỒN (ẢNH/VIDEO)
+        async function handleInput(e) {
+            const file = e.target.files[0];
+            const url = URL.createObjectURL(file);
+            const container = document.getElementById('queue-container');
+            
+            // Nếu là ảnh: xử lý ngay. Nếu là video: tạo player để trích xuất frame
+            const media = file.type.startsWith('image') ? new Image() : document.createElement('video');
+            media.src = url;
+            
+            media.onload = async () => {
+                const detections = await faceapi.detectAllFaces(media);
+                detections.forEach((det, i) => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = det.box.width; canvas.height = det.box.height;
+                    canvas.getContext('2d').drawImage(media, det.box.x, det.box.y, det.box.width, det.box.height, 0, 0, det.box.width, det.box.height);
+                    
+                    // Tạo item hàng chờ
+                    const item = document.createElement('div');
+                    item.className = 'queue-item';
+                    item.innerHTML = `
+                        <img src="${canvas.toDataURL()}"><br>
+                        <input type="text" placeholder="Nhập tên" id="name-${i}">
+                        <button onclick="useMic('name-${i}')">🎙️</button>
+                        <button onclick="saveItem('${i}')">LƯU</button>
+                    `;
+                    container.appendChild(item);
+                });
+            };
+        }
 
-            // Bật camera cho trang tương ứng
-            if (pageId === 'train' || pageId === 'cam') {
-                const v = document.getElementById(pageId === 'train' ? 'v-train' : 'v-cam');
-                try {
-                    v.srcObject = await navigator.mediaDevices.getUserMedia({ video: true });
-                } catch (e) { alert("Cấp quyền camera để tiếp tục!"); }
-            }
+        // NHẬP LIỆU BẰNG MIC (Web Speech API)
+        function useMic(inputId) {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'vi-VN';
+            recognition.start();
+            recognition.onresult = (event) => {
+                document.getElementById(inputId).value = event.results[0][0].transcript;
+            };
+        }
+
+        function saveItem(i) {
+            const name = document.getElementById('name-'+i).value;
+            alert("Đã lưu nhân sự: " + name);
         }
     </script>
 </body>
