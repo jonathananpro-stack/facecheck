@@ -1,20 +1,22 @@
 import { UI } from './js/ui.js'; import { detect } from './js/ai.js'; import { db } from './js/db.js';
-let currentFacing = 'user';
-window.showScreen = (id) => { document.querySelectorAll('.screen').forEach(s => s.style.display = 'none'); document.getElementById(id).style.display = 'flex'; if(id==='main-screen') initCamera(); };
-window.switchCamera = async () => { currentFacing = (currentFacing === 'user') ? { exact: 'environment' } : 'user'; initCamera(); };
+import { Report } from './js/report.js'; window.Report = Report;
+let facing = 'user';
 async function initCamera() {
     const video = document.getElementById('video');
-    video.srcObject = await navigator.mediaDevices.getUserMedia({ video: { facingMode: currentFacing } });
+    video.srcObject = await navigator.mediaDevices.getUserMedia({ video: { facingMode: facing } });
     await UI.loadModels();
     setInterval(async () => {
-        const desc = await detect(video);
-        if (desc) {
-            const match = db.findMatch(desc);
-            if (match) UI.updateAttendance(match.name);
-            else { window.currentDescriptor = desc; UI.showTrainModal(UI.cropFace(video)); }
+        if(video.readyState===4) {
+            const desc = await detect(video);
+            if(desc) {
+                const match = db.findMatch(desc);
+                if(match) { document.getElementById('status-display').innerText = "Đang giám sát: " + match.name; UI.updateAttendance(match.name); }
+                else { window.currentDescriptor = desc; UI.showTrainModal(UI.cropFace(video)); }
+            }
         }
     }, 3000);
 }
-window.saveProfile = () => { db.saveUser({ name: document.getElementById('new-name').value, descriptor: Array.from(window.currentDescriptor) }); document.getElementById('info-modal').style.display='none'; };
-window.processOCR = async (e) => { const { data: { text } } = await Tesseract.recognize(e.target.files[0], 'vie'); db.initSession("OCR", text.split('\n').filter(n=>n.trim().length>3)); alert("Đã nạp danh sách!"); };
-window.startAudit = () => { alert("Danh sách vắng đã được kiểm tra."); };
+window.saveProfile = () => { db.saveUser({name:document.getElementById('new-name').value, unit:document.getElementById('new-unit').value, descriptor:Array.from(window.currentDescriptor)}); document.getElementById('info-modal').style.display='none'; };
+window.processOCR = async (e) => { const {data:{text}} = await Tesseract.recognize(e.target.files[0], 'vie'); db.initSession(text); alert("Đã nạp danh sách!"); };
+window.switchCamera = () => { facing = (facing === 'user' ? {exact:'environment'} : 'user'); initCamera(); };
+initCamera();
