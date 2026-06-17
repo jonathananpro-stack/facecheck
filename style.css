@@ -1,39 +1,36 @@
 body {
-    margin: 0; background: #050505; color: #00ffcc; /* Màu xanh lá đặc trưng AI */
-    font-family: 'Courier New', monospace; overflow: hidden;
+    margin: 0; background: #050505; color: #00ffcc;
+    font-family: 'Courier New', Courier, monospace; overflow: hidden;
+    display: flex; justify-content: center; align-items: center; height: 100vh;
 }
 
-/* Hiệu ứng quét màn hình (Scanline) */
+/* Hiệu ứng quét màn hình (Scanlines) */
 body::after {
     content: " "; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-    background-size: 100% 2px, 3px 100%; pointer-events: none; z-index: 10;
+    background: linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.2) 50%);
+    background-size: 100% 4px; pointer-events: none; z-index: 10;
 }
 
-.grid {
-    display: flex; gap: 40px; margin-top: 100px;
+.glow-text {
+    font-size: 4em; text-shadow: 0 0 20px #00ffcc;
+    text-align: center; margin-bottom: 50px; text-transform: uppercase;
 }
+
+.grid { display: flex; gap: 30px; }
 
 .grid button {
-    padding: 30px 50px;
-    background: rgba(0, 255, 204, 0.1); /* Kính mờ */
-    border: 1px solid #00ffcc;
-    color: #00ffcc;
-    border-radius: 5px;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    box-shadow: 0 0 15px rgba(0, 255, 204, 0.2);
-    transition: all 0.3s;
+    padding: 25px 40px; background: rgba(0, 255, 204, 0.05);
+    border: 1px solid #00ffcc; color: #00ffcc;
+    font-size: 1.2em; font-weight: bold; text-transform: uppercase;
+    cursor: pointer; transition: 0.4s; box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
 }
 
 .grid button:hover {
-    background: #00ffcc;
-    color: #000;
-    box-shadow: 0 0 30px #00ffcc;
+    background: #00ffcc; color: #000;
+    box-shadow: 0 0 40px #00ffcc; transform: scale(1.1);
 }
 
-h1 {
-    font-size: 3em; text-shadow: 0 0 20px #00ffcc;
-    border-bottom: 2px solid #00ffcc; padding-bottom: 10px;
+.system-log {
+    position: absolute; bottom: 20px; left: 20px;
+    font-size: 0.8em; opacity: 0.6; pointer-events: none;
 }
