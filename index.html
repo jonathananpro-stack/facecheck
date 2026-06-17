@@ -2,46 +2,31 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>SEC_CORE_IOS</title>
+    <title>SEC_CORE v2.0</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
     <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 </head>
 <body>
-    <div id="overlay" onclick="toggleMenu()"></div>
-    <div id="sidebar">
-        <div class="menu-header">Menu Điều Khiển</div>
-        <div class="input-box">
-            <textarea id="guest-list" placeholder="Danh sách khách (Tên 1, Tên 2...)"></textarea>
-            <button onclick="startNewSession()"><i class="fa-solid fa-play"></i> Bắt đầu phiên</button>
-            <button onclick="startAudit()"><i class="fa-solid fa-magnifying-glass"></i> Kiểm tra vắng</button>
-            <button onclick="showSummary()"><i class="fa-solid fa-chart-pie"></i> Xem Tổng Kết</button>
+    <div id="welcome-screen" class="screen">
+        <h1>SEC_CORE v2.0</h1>
+        <div class="menu-grid">
+            <button onclick="showScreen('main-screen')">📷 Điểm danh trực tiếp</button>
+            <button onclick="document.getElementById('ocr-input').click()">➕ Tạo cuộc họp từ ảnh</button>
+            <input type="file" id="ocr-input" hidden onchange="processOCR(event)">
         </div>
     </div>
-    <div id="main-content">
+
+    <div id="main-screen" class="screen" style="display:none;">
         <div class="top-bar">
-            <button class="menu-btn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></button>
-            <h3>Hệ thống điểm danh</h3>
-        </div>
-        <div class="stats-bar">
-            <div class="stat-card"><span id="present-count">0</span><label>Có mặt</label></div>
-            <div class="stat-card"><span id="missing-count">0</span><label>Còn thiếu</label></div>
+            <button onclick="showScreen('welcome-screen')"><i class="fa-solid fa-house"></i></button>
+            <button onclick="switchCamera()"><i class="fa-solid fa-camera-rotate"></i> Đảo Cam</button>
         </div>
         <video id="video" autoplay playsinline muted></video>
-        <table id="attendance-table">
-            <thead><tr><th>TÊN</th><th>TRẠNG THÁI</th><th>GIỜ</th></tr></thead>
-            <tbody id="attendance-body"></tbody>
-        </table>
+        <table id="attendance-table"><tbody id="attendance-body"></tbody></table>
     </div>
-    <div id="info-modal" class="modal">
-        <div class="modal-content">
-            <h3>Đăng ký Nhân sự</h3>
-            <input type="text" id="name" placeholder="Họ tên">
-            <input type="text" id="unit" placeholder="Đơn vị">
-            <input type="text" id="position" placeholder="Chức vụ">
-            <button onclick="saveProfile()">Lưu Hồ Sơ</button>
-        </div>
-    </div>
+
     <script type="module" src="app.js"></script>
 </body>
 </html>
