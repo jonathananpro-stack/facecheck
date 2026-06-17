@@ -2,14 +2,14 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>SYSTEM_CORE_V2</title>
+    <title>SEC_CORE_FINAL</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
-        #video { width: 640px; height: 480px; background: #222; }
-        #vip-alert { display:none; position:fixed; top:20px; width:80%; padding:20px; background:red; text-align:center; font-weight:bold; font-size:20px; z-index:999; }
-        table { width: 80%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #444; padding: 10px; text-align: center; }
+        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
+        #video { width: 640px; height: 480px; background: #333; }
+        #vip-alert { display:none; position:fixed; top:0; width:100%; padding:20px; background:red; text-align:center; font-weight:bold; font-size:24px; z-index:999; }
+        table { width: 100%; max-width: 800px; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #555; padding: 12px; text-align: center; }
     </style>
 </head>
 <body>
@@ -17,25 +17,31 @@
     <video id="video" autoplay playsinline muted></video>
     <table>
         <thead><tr><th>TÊN</th><th>TRẠNG THÁI</th><th>GIỜ</th></tr></thead>
-        <tbody id="attendance-body"></tbody>
+        <tbody id="body"></tbody>
     </table>
 
     <script>
         const video = document.getElementById('video');
-        const body = document.getElementById('attendance-body');
+        const body = document.getElementById('body');
         const alertBox = document.getElementById('vip-alert');
         let library = JSON.parse(localStorage.getItem('library') || '[]');
 
-        async function start() {
-            await Promise.all([
-                faceapi.nets.tinyFaceDetector.loadFromUri('https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights'),
-                faceapi.nets.faceLandmark6Net.loadFromUri('https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights'),
-                faceapi.nets.faceRecognitionNet.loadFromUri('https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights')
-            ]);
-            
-            const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
-            video.srcObject = stream;
+        async function init() {
+            try {
+                // Tải Models
+                await faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights');
+                await faceapi.nets.faceLandmark6Net.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights');
+                await faceapi.nets.faceRecognitionNet.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights');
+                
+                // Mở Camera
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                video.srcObject = stream;
+            } catch (e) {
+                alert("Lỗi Camera hoặc mạng: " + e.message);
+            }
+        }
 
+        video.addEventListener('play', () => {
             const matcher = library.length > 0 ? new faceapi.FaceMatcher(library.map(p => new faceapi.LabeledFaceDescriptors(p.name, [new Float32Array(Object.values(p.descriptor))]))) : null;
 
             setInterval(async () => {
@@ -44,7 +50,7 @@
                     const match = matcher.findBestMatch(det.descriptor);
                     if(match.label !== 'unknown' && match.distance < 0.4) {
                         const p = library.find(x => x.name === match.label);
-                        if(!document.getElementById('row-'+p.name)) {
+                        if(p && !document.getElementById('row-'+p.name)) {
                             body.innerHTML += `<tr id="row-${p.name}"><td>${p.name}</td><td>ĐÃ CÓ MẶT</td><td>${new Date().toLocaleTimeString()}</td></tr>`;
                             if(p.isVIP) {
                                 alertBox.innerText = '⚠️ VIP ĐANG CÓ MẶT: ' + p.name;
@@ -55,8 +61,9 @@
                     }
                 }
             }, 1000);
-        }
-        start();
+        });
+
+        init();
     </script>
 </body>
 </html>
