@@ -1,4 +1,4 @@
-body{margin:0; background:#050505; color:#00ffcc; font-family:'Courier New', monospace;}
+body{margin:0; background:#050505; color:#00ffcc; font-family:'Courier New', monospace; overflow:hidden;}
 .screen{height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;}
 .grid{display:flex; gap:20px;}
 .grid button{padding:20px; border:1px solid #00ffcc; background:transparent; color:#00ffcc; cursor:pointer;}
