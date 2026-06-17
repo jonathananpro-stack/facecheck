@@ -9,27 +9,38 @@
 </head>
 <body>
     <div id="overlay" onclick="toggleMenu()"></div>
-    
     <div id="sidebar">
         <div class="menu-header">Menu Điều Khiển</div>
         <div class="input-box">
-            <input type="text" id="manual-name" placeholder="Tên nhân viên...">
-            <button onclick="saveManual()"><i class="fa-solid fa-check"></i> Lưu</button>
-            <button onclick="startVoice()"><i class="fa-solid fa-microphone"></i> Nhập Giọng Nói</button>
+            <textarea id="guest-list" placeholder="Danh sách khách (Tên 1, Tên 2...)"></textarea>
+            <button onclick="startNewSession()"><i class="fa-solid fa-play"></i> Bắt đầu phiên</button>
+            <button onclick="startAudit()"><i class="fa-solid fa-magnifying-glass"></i> Kiểm tra vắng</button>
+            <button onclick="showSummary()"><i class="fa-solid fa-chart-pie"></i> Xem Tổng Kết</button>
         </div>
-        <button class="btn-report" onclick="exportData()"><i class="fa-solid fa-file-csv"></i> Xuất Báo Cáo</button>
     </div>
-
     <div id="main-content">
         <div class="top-bar">
             <button class="menu-btn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></button>
             <h3>Hệ thống điểm danh</h3>
+        </div>
+        <div class="stats-bar">
+            <div class="stat-card"><span id="present-count">0</span><label>Có mặt</label></div>
+            <div class="stat-card"><span id="missing-count">0</span><label>Còn thiếu</label></div>
         </div>
         <video id="video" autoplay playsinline muted></video>
         <table id="attendance-table">
             <thead><tr><th>TÊN</th><th>TRẠNG THÁI</th><th>GIỜ</th></tr></thead>
             <tbody id="attendance-body"></tbody>
         </table>
+    </div>
+    <div id="info-modal" class="modal">
+        <div class="modal-content">
+            <h3>Đăng ký Nhân sự</h3>
+            <input type="text" id="name" placeholder="Họ tên">
+            <input type="text" id="unit" placeholder="Đơn vị">
+            <input type="text" id="position" placeholder="Chức vụ">
+            <button onclick="saveProfile()">Lưu Hồ Sơ</button>
+        </div>
     </div>
     <script type="module" src="app.js"></script>
 </body>
