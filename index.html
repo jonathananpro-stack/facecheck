@@ -2,40 +2,33 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FaceCheck AI Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        body { font-family: sans-serif; text-align: center; background: #f4f4f9; padding: 10px; }
-        .view { display: none; margin-top: 20px; }
-        #home { display: block; }
-        #video-container { position: relative; display: inline-block; width: 100%; max-width: 400px; }
-        video { width: 100%; border-radius: 15px; background: #000; }
-        #video-container canvas { position: absolute; top: 0; left: 0; pointer-events: none; }
-        #faceSlider { display: flex; gap: 10px; overflow-x: auto; padding: 10px; min-height: 180px; }
-        .face-slide { border: 2px solid #28a745; padding: 5px; border-radius: 8px; }
-        .face-slide canvas { width: 120px; height: 120px; display: block; }
-        button { padding: 10px 20px; margin: 5px; border-radius: 8px; border: none; background: #28a745; color: white; cursor: pointer; }
+        body { font-family: sans-serif; text-align: center; background: #1a1a1a; color: white; }
+        #video-container { position: relative; display: inline-block; }
+        canvas { position: absolute; top: 0; left: 0; }
+        #faceModal { display: none; position: fixed; top: 20%; left: 10%; width: 80%; background: #333; padding: 20px; border-radius: 15px; z-index: 1000; }
+        input { padding: 10px; width: 80%; }
+        button { padding: 10px 20px; background: #28a745; border: none; color: white; cursor: pointer; }
     </style>
 </head>
 <body>
-    <nav>
-        <button onclick="showView('home')">Trang chủ</button>
-        <button onclick="showView('setup')">Tạo cuộc họp</button>
-        <button onclick="showView('attendance')">Điểm danh</button>
-    </nav>
-    <div id="home" class="view"><h1>FaceCheck AI</h1></div>
-    <div id="setup" class="view">
-        <h1>Huấn luyện khuôn mặt</h1>
-        <input type="file" id="upload" accept="image/*">
-        <div id="faceSlider"></div>
-        <p id="setupStatus">Đang tải AI...</p>
+    <h1>FaceCheck AI</h1>
+    <div id="video-container">
+        <video id="video" width="400" height="300" autoplay muted playsinline></video>
     </div>
-    <div id="attendance" class="view">
-        <h1>Điểm danh</h1>
-        <div id="video-container"><video id="video" autoplay muted playsinline></video></div>
-        <div id="status">Khởi động...</div>
+    <p id="status">Đang khởi động AI...</p>
+
+    <div id="faceModal">
+        <h3>Phát hiện người mới!</h3>
+        <div id="modalFacePreview"></div>
+        <p>Bỏ qua sau: <span id="countdown">5</span>s</p>
+        <input type="text" id="newName" placeholder="Nhập tên...">
+        <button onclick="saveNewFace()">Lưu vào hệ thống</button>
     </div>
+
+    <audio id="beepSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
     <script src="app.js"></script>
 </body>
 </html>
