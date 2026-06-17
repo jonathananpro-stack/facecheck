@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>SEC_CORE v2.0</title>
+    <title>SEC_CORE v2.0 Full</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
@@ -13,9 +13,8 @@
         <h1>SEC_CORE v2.0</h1>
         <div class="menu-grid">
             <button onclick="showScreen('main-screen')"><i class="fa-solid fa-camera"></i> Điểm danh trực tiếp</button>
-            <button onclick="document.getElementById('ocr-input').click()"><i class="fa-solid fa-file-image"></i> Tạo họp từ ảnh</button>
+            <button onclick="document.getElementById('ocr-input').click()"><i class="fa-solid fa-file-image"></i> Nhập danh sách từ ảnh</button>
             <input type="file" id="ocr-input" hidden onchange="processOCR(event)">
-            <button onclick="alert('Đang phát triển')"><i class="fa-solid fa-clock-rotate-left"></i> Xem lại cuộc họp</button>
         </div>
     </div>
 
@@ -23,9 +22,24 @@
         <div class="top-bar">
             <button onclick="showScreen('welcome-screen')"><i class="fa-solid fa-house"></i></button>
             <button onclick="switchCamera()"><i class="fa-solid fa-camera-rotate"></i> Đảo Cam</button>
+            <button onclick="startAudit()"><i class="fa-solid fa-magnifying-glass"></i> Kiểm vắng</button>
+            <button onclick="showSummary()"><i class="fa-solid fa-chart-pie"></i> Tổng kết</button>
+        </div>
+        <div class="stats-bar">
+            <div><span id="present-count">0</span> Có mặt</div>
+            <div><span id="missing-count">0</span> Còn thiếu</div>
         </div>
         <video id="video" autoplay playsinline muted></video>
         <table id="attendance-table"><tbody id="attendance-body"></tbody></table>
+    </div>
+
+    <div id="info-modal" class="modal">
+        <div class="modal-content">
+            <h3>Nhân sự mới</h3>
+            <input type="text" id="new-name" placeholder="Họ tên">
+            <input type="text" id="new-unit" placeholder="Đơn vị">
+            <button onclick="saveProfile()">Lưu</button>
+        </div>
     </div>
     <script type="module" src="app.js"></script>
 </body>
