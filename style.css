@@ -1,7 +1,7 @@
-body { margin:0; font-family: sans-serif; background:#000; color:#fff; }
+body { margin:0; font-family:sans-serif; background:#000; color:#fff; }
 .screen { display:flex; flex-direction:column; align-items:center; padding:20px; height:100vh; }
 .menu-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; width:100%; max-width:500px; margin-top:50px; }
-button { padding:30px; border-radius:30px; border:none; background:#222; color:#fff; font-size:18px; cursor:pointer; }
+button { padding:25px; border-radius:25px; border:none; background:#1c1c1e; color:#fff; font-size:16px; cursor:pointer; }
 button:active { background:#007aff; }
-#video { width:100%; max-width:600px; border-radius:40px; margin-top:20px; }
-.modal { position:fixed; top:0; width:100%; height:100%; background:rgba(0,0,0,0.9); display:none; flex-direction:column; align-items:center; justify-content:center; }
+#video { width:100%; max-width:500px; border-radius:30px; margin:20px 0; border:2px solid #333; }
+.modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); display:none; flex-direction:column; align-items:center; justify-content:center; }
