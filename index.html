@@ -6,11 +6,14 @@
     <title>FaceCheck AI Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 10px; background: #f4f4f9; }
+        body { font-family: sans-serif; text-align: center; background: #f4f4f9; padding: 10px; }
         .view { display: none; margin-top: 20px; }
         #home { display: block; }
-        video, canvas { width: 100%; max-width: 400px; border-radius: 10px; background: #000; }
-        button { padding: 10px 15px; margin: 5px; border-radius: 5px; border: none; background: #28a745; color: white; cursor: pointer; }
+        /* Container giúp Canvas đè lên Video chính xác */
+        #video-container { position: relative; display: inline-block; width: 100%; max-width: 400px; }
+        video { width: 100%; border-radius: 15px; background: #000; }
+        canvas { position: absolute; top: 0; left: 0; pointer-events: none; }
+        button { padding: 12px 20px; margin: 5px; border-radius: 8px; border: none; background: #28a745; color: white; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -20,20 +23,22 @@
         <button onclick="showView('attendance')">Điểm danh</button>
     </nav>
 
-    <div id="home" class="view"><h1>Hệ thống FaceCheck</h1><p>Chào mừng đồng chí!</p></div>
+    <div id="home" class="view"><h1>FaceCheck AI</h1><p>Hệ thống sẵn sàng.</p></div>
 
     <div id="setup" class="view">
         <h1>Tạo cuộc họp</h1>
         <input type="file" id="upload" accept="image/*">
-        <div id="canvasContainer" style="margin-top:10px;"></div>
+        <div id="canvasContainer"></div>
         <button id="btnTrain" style="display:none;" onclick="trainFaces()">Huấn luyện AI</button>
         <p id="setupStatus"></p>
     </div>
 
     <div id="attendance" class="view">
         <h1>Điểm danh</h1>
-        <video id="video" autoplay muted playsinline></video>
-        <p id="status">Đang khởi động...</p>
+        <div id="video-container">
+            <video id="video" autoplay muted playsinline></video>
+        </div>
+        <div id="status" style="margin-top:10px; font-weight:bold;">Đang khởi động...</div>
     </div>
 
     <script src="app.js"></script>
