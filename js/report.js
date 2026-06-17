@@ -1,1 +1,1 @@
-export const Report = { export: () => console.log("Exporting data...") };
+export const Report = { export: () => console.log("Report Module Ready") };
