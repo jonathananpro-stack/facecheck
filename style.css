@@ -1,5 +1,39 @@
-body{margin:0; background:#0a0a0a; color:#fff; font-family:sans-serif;}
-.screen{height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;}
-#video{width:80%; border-radius:20px; border:2px solid #333;}
-.hud-box{position:absolute; color:#0f0; border:1px solid #0f0; background:rgba(0,0,0,0.6); padding:5px; pointer-events:none;}
-#validation-overlay{position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); display:none; background:rgba(0,0,0,0.9); padding:20px; border:2px solid #ffcc00;}
+body {
+    margin: 0; background: #050505; color: #00ffcc; /* Màu xanh lá đặc trưng AI */
+    font-family: 'Courier New', monospace; overflow: hidden;
+}
+
+/* Hiệu ứng quét màn hình (Scanline) */
+body::after {
+    content: " "; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 2px, 3px 100%; pointer-events: none; z-index: 10;
+}
+
+.grid {
+    display: flex; gap: 40px; margin-top: 100px;
+}
+
+.grid button {
+    padding: 30px 50px;
+    background: rgba(0, 255, 204, 0.1); /* Kính mờ */
+    border: 1px solid #00ffcc;
+    color: #00ffcc;
+    border-radius: 5px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 0 15px rgba(0, 255, 204, 0.2);
+    transition: all 0.3s;
+}
+
+.grid button:hover {
+    background: #00ffcc;
+    color: #000;
+    box-shadow: 0 0 30px #00ffcc;
+}
+
+h1 {
+    font-size: 3em; text-shadow: 0 0 20px #00ffcc;
+    border-bottom: 2px solid #00ffcc; padding-bottom: 10px;
+}
