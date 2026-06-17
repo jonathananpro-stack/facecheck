@@ -2,33 +2,30 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>FaceCheck AI Pro</title>
+    <title>FaceCheck Pro AI</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
-        body { font-family: sans-serif; text-align: center; background: #1a1a1a; color: white; }
-        #video-container { position: relative; display: inline-block; }
-        canvas { position: absolute; top: 0; left: 0; }
-        #faceModal { display: none; position: fixed; top: 20%; left: 10%; width: 80%; background: #333; padding: 20px; border-radius: 15px; z-index: 1000; }
-        input { padding: 10px; width: 80%; }
-        button { padding: 10px 20px; background: #28a745; border: none; color: white; cursor: pointer; }
+        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; overflow: hidden; }
+        #video-container { width: 100vw; height: 100vh; position: relative; display: flex; align-items: center; justify-content: center; }
+        video { width: 100%; height: 100%; object-fit: cover; }
+        canvas { position: absolute; }
+        
+        /* Menu nổi */
+        #menu { position: absolute; top: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 100; }
+        .btn { padding: 15px; background: rgba(0,0,0,0.6); border: 1px solid #fff; color: white; border-radius: 50px; cursor: pointer; backdrop-filter: blur(5px); }
+        
+        #ai-status { position: absolute; bottom: 30px; width: 100%; text-align: center; font-size: 1.2rem; text-shadow: 0 0 5px #000; }
     </style>
 </head>
 <body>
-    <h1>FaceCheck AI</h1>
     <div id="video-container">
-        <video id="video" width="400" height="300" autoplay muted playsinline></video>
+        <video id="video" autoplay muted playsinline></video>
+        <div id="menu">
+            <button class="btn" onclick="toggleCamera()">📷 Đổi Camera</button>
+            <button class="btn" onclick="viewDatabase()">📂 Danh sách</button>
+        </div>
+        <div id="ai-status">Đang khởi tạo AI...</div>
     </div>
-    <p id="status">Đang khởi động AI...</p>
-
-    <div id="faceModal">
-        <h3>Phát hiện người mới!</h3>
-        <div id="modalFacePreview"></div>
-        <p>Bỏ qua sau: <span id="countdown">5</span>s</p>
-        <input type="text" id="newName" placeholder="Nhập tên...">
-        <button onclick="saveNewFace()">Lưu vào hệ thống</button>
-    </div>
-
-    <audio id="beepSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
     <script src="app.js"></script>
 </body>
 </html>
