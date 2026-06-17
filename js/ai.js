@@ -1,9 +1,8 @@
-export const AI_CONFIG = {
-    minConfidence: 0.4, // Ngưỡng nhận diện (càng thấp càng khắt khe)
-};
-
 export async function detect(video) {
-    return await faceapi.detectSingleFace(video)
+    const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 224 });
+    const result = await faceapi.detectSingleFace(video, options)
         .withFaceLandmarks()
         .withFaceDescriptor();
+    
+    return result ? result.descriptor : null;
 }
