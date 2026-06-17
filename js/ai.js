@@ -1,5 +1,5 @@
 export async function detect(video) {
-    const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 224 });
-    const result = await faceapi.detectSingleFace(video, options).withFaceLandmarks().withFaceDescriptor();
-    return result ? result.descriptor : null;
+    if (!video.readyState || video.paused) return null;
+    const res = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+    return res ? res.descriptor : null;
 }
