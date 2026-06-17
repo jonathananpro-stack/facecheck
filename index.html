@@ -12,9 +12,10 @@
     <div id="welcome-screen" class="screen">
         <h1>SEC_CORE v2.0</h1>
         <div class="menu-grid">
-            <button onclick="showScreen('main-screen')">📷 Điểm danh trực tiếp</button>
-            <button onclick="document.getElementById('ocr-input').click()">➕ Tạo cuộc họp từ ảnh</button>
+            <button onclick="showScreen('main-screen')"><i class="fa-solid fa-camera"></i> Điểm danh trực tiếp</button>
+            <button onclick="document.getElementById('ocr-input').click()"><i class="fa-solid fa-file-image"></i> Tạo họp từ ảnh</button>
             <input type="file" id="ocr-input" hidden onchange="processOCR(event)">
+            <button onclick="alert('Đang phát triển')"><i class="fa-solid fa-clock-rotate-left"></i> Xem lại cuộc họp</button>
         </div>
     </div>
 
@@ -26,7 +27,6 @@
         <video id="video" autoplay playsinline muted></video>
         <table id="attendance-table"><tbody id="attendance-body"></tbody></table>
     </div>
-
     <script type="module" src="app.js"></script>
 </body>
 </html>
