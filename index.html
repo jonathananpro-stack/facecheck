@@ -1,23 +1,45 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>SEC_CORE_V2_PRO</title>
-    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <title>SEC_CORE_V2_FAST</title>
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <style>
+        body { background: #111; color: #fff; font-family: sans-serif; }
+        #video { width: 640px; height: 480px; background: #000; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #444; padding: 10px; text-align: center; }
+    </style>
 </head>
 <body>
-    <div id="vip-alert-box" style="display:none; position:fixed; top:0; width:100%; background:red; color:white; padding:20px; text-align:center; z-index:999; font-weight:bold;"></div>
-    
-    <video id="video" autoplay playsinline muted></video>
-    
-    <div id="attendance-board">
-        <table id="attendance-table">
-            <thead><tr><th>TÊN</th><th>TRẠNG THÁI</th><th>GIỜ</th></tr></thead>
-            <tbody id="attendance-body"></tbody>
-        </table>
-    </div>
+    <video id="video" autoplay muted></video>
+    <table id="table">
+        <thead><tr><th>TÊN</th><th>TRẠNG THÁI</th><th>GIỜ</th></tr></thead>
+        <tbody id="body"></tbody>
+    </table>
 
-    <script type="module" src="app.js"></script>
+    <script>
+        const video = document.getElementById('video');
+        const body = document.getElementById('body');
+
+        async function start() {
+            await Promise.all([
+                faceapi.nets.tinyFaceDetector.loadFromUri('https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights'),
+                faceapi.nets.faceLandmark6Net.loadFromUri('https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights'),
+                faceapi.nets.faceRecognitionNet.loadFromUri('https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights')
+            ]);
+            
+            const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+            video.srcObject = stream;
+
+            setInterval(async () => {
+                const det = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+                if(det) {
+                    // Đây là nơi đồng chí thêm logic so sánh với danh sách nhân sự của đồng chí
+                    console.log("Đã thấy gương mặt!");
+                }
+            }, 1000);
+        }
+        start();
+    </script>
 </body>
 </html>
